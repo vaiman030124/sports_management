@@ -5,26 +5,28 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Group;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class GroupController extends Controller
 {
     public function index()
     {
-        $groups = Group::with(['sport', 'creator'])->paginate(15);
+        $groups = Group::with(['creator'])->paginate(15);
         return view('admin.groups.index', compact('groups'));
     }
 
     public function create()
     {
-        return view('admin.groups.create');
+        $users = User::all();
+        return view('admin.groups.create', compact('users'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'max_members' => 'required|integer|min:1',
-            'status' => 'required|in:active,inactive,full'
+            'group_name' => 'required|string|max:255',
+            'created_by' => 'required|integer',
+            'status' => 'required|in:active,inactive'
         ]);
 
         Group::create($validated);
@@ -40,15 +42,16 @@ class GroupController extends Controller
 
     public function edit(Group $group)
     {
-        return view('admin.groups.edit', compact('group'));
+        $users = User::all();
+        return view('admin.groups.edit', compact('group','users'));
     }
 
     public function update(Request $request, Group $group)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'max_members' => 'required|integer|min:1',
-            'status' => 'required|in:active,inactive,full'
+            'group_name' => 'required|string|max:255',
+            'created_by' => 'required|integer',
+            'status' => 'required|in:active,inactive'
         ]);
 
         $group->update($validated);

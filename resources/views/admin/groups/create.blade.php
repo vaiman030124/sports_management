@@ -30,10 +30,20 @@
                 @csrf
                 <div class="card-body">
                     <div class="form-group">
-                        <label for="name">Group Name *</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
+                        <label for="group_name">Group Name *</label>
+                        <input type="text" class="form-control" id="group_name" name="group_name" required>
                     </div>
                     <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="created_by">User *</label>
+                                <select name="created_by" id="created_by" class="form-control" required>
+                                    @foreach($users as $user)
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="status">Status *</label>
@@ -43,21 +53,13 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="max_members">Max Members</label>
-                                <input type="number" class="form-control" id="max_members" name="max_members" min="1">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                     </div>
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-primary">Create Group</button>
-                    <a href="{{ route('admin.groups.index') }}" class="btn btn-default">Cancel</a>
+                    <a href="{{ route('admin.groups.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
                 </div>
             </form>
         </div>

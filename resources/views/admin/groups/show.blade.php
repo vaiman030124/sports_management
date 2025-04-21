@@ -41,11 +41,7 @@
                             </tr>
                             <tr>
                                 <th>Name</th>
-                                <td>{{ $group->name }}</td>
-                            </tr>
-                            <tr>
-                                <th>Sport</th>
-                                <td>{{ $group->sport->name ?? 'N/A' }}</td>
+                                <td>{{ $group->group_name }}</td>
                             </tr>
                         </table>
                     </div>
@@ -60,27 +56,30 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th>Max Members</th>
-                                <td>{{ $group->max_members ?? 'Unlimited' }}</td>
-                            </tr>
-                            <tr>
-                                <th>Created At</th>
-                                <td>{{ $group->created_at->format('M d, Y H:i') }}</td>
+                                <th>Created By</th>
+                                <td>{{ $group->creator->name }}</td>
                             </tr>
                         </table>
                     </div>
                 </div>
-                <div class="form-group mt-3">
-                    <label>Description</label>
-                    <div class="p-3 bg-light rounded">
-                        {{ $group->description ?? 'No description available' }}
-                    </div>
+
+                <div class="mt-4">
+                    <a href="{{ route('admin.groups.edit', $group) }}" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+
+                    <form action="{{ route('admin.groups.destroy', $group) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this group?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </form>
+
+                    <a href="{{ route('admin.groups.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
                 </div>
-            </div>
-            <div class="card-footer">
-                <a href="{{ route('admin.groups.index') }}" class="btn btn-default">
-                    <i class="fas fa-arrow-left"></i> Back to List
-                </a>
             </div>
         </div>
     </div>

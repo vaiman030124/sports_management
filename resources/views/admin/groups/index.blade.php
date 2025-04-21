@@ -36,34 +36,45 @@
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
-                            <th>Sport</th>
-                            <th>Members Count</th>
+                            <th>Created By</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($groups as $group)
-                        <tr>
-                            <td>{{ $group->id }}</td>
-                            <td>{{ $group->name }}</td>
-                            <td>{{ $group->sport->name ?? 'N/A' }}</td>
-                            <td>{{ $group->members_count }}</td>
-                            <td>
-                                <span class="badge badge-{{ $group->status == 'active' ? 'success' : 'secondary' }}">
-                                    {{ ucfirst($group->status) }}
-                                </span>
-                            </td>
-                            <td>
-                                <a href="{{ route('admin.groups.edit', $group->id) }}" class="btn btn-sm btn-info">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="{{ route('admin.groups.show', $group->id) }}" class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        @endforeach
+                        @if(count($groups) > 0)
+                            @foreach($groups as $group)
+                            <tr>
+                                <td>{{ $group->id }}</td>
+                                <td>{{ $group->group_name }}</td>
+                                <td>{{ $group->creator->name }}</td>
+                                <td>
+                                    <span class="badge badge-{{ $group->status == 'active' ? 'success' : 'secondary' }}">
+                                        {{ ucfirst($group->status) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ route('admin.groups.show', $group->id) }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="{{ route('admin.groups.edit', $group->id) }}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ route('admin.groups.destroy', $group) }}" method="POST" style="display:inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        @else
+                            <tr>
+                                <td colspan="6">No groups exists</td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
