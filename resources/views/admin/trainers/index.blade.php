@@ -36,8 +36,8 @@
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
-                            <th>Specialization</th>
-                            <th>Experience</th>
+                            <th>Email</th>
+                            <th>Sport</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -47,14 +47,17 @@
                         <tr>
                             <td>{{ $trainer->id }}</td>
                             <td>{{ $trainer->name }}</td>
-                            <td>{{ $trainer->specialization }}</td>
-                            <td>{{ $trainer->experience }} years</td>
+                            <td>{{ $trainer->adminUser->email }}</td>
+                            <td>{{ $trainer->trainerSport->sport_name }}</td>
                             <td>
                                 <span class="badge badge-{{ $trainer->status == 'active' ? 'success' : 'danger' }}">
                                     {{ ucfirst($trainer->status) }}
                                 </span>
                             </td>
                             <td>
+                                <a href="{{ route('admin.trainers.show', $trainer->id) }}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <a href="{{ route('admin.trainers.edit', $trainer->id) }}" class="btn btn-sm btn-info">
                                     <i class="fas fa-edit"></i>
                                 </a>
