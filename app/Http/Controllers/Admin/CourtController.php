@@ -17,7 +17,7 @@ class CourtController extends Controller
 
     public function create()
     {
-        $sports = Sport::all()->where('status', '1')->pluck('sport_name', 'id');
+        $sports = Sport::all()->where('status', 'active')->pluck('sport_name', 'id');
         return view('admin.courts.create', compact('sports'));
     }
 
@@ -42,7 +42,7 @@ class CourtController extends Controller
 
     public function edit(Court $court)
     {
-        $sports = Sport::all()->where('status', '1')->pluck('sport_name', 'id');
+        $sports = Sport::all()->where('status', 'active')->pluck('sport_name', 'id');
         return view('admin.courts.edit', compact('court', 'sports'));
     }
 
