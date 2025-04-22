@@ -66,4 +66,21 @@ class CourtController extends Controller
         return redirect()->route('admin.courts.index')
             ->with('success', 'Court deleted successfully');
     }
+
+    public function getCourtListBySports(Request $request) {
+        try {
+            $arr = ['status' => '0', 'message' => 'Courts not found.'];
+
+            $sport_id = $request->sport_id ?? 0;
+
+            if($sport_id > 0) {
+                $courts = Court::all()->where('status', 'active')->where('sport_id', $sport_id);
+                $arr = ['status' => '1', 'message' => 'Courts found.', 'courts' => $courts];
+            }
+
+            return response()->json($arr);
+        } catch (\Exception $e) {
+            return response()->json(['status' => '0', 'message' => $e->getMessage()]);
+        }
+    }
 }

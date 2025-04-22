@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\Auth\AdminResetPasswordController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Admin\CourtController;
 
 Route::prefix('admin')->group(function() {
     // Authentication Routes
@@ -65,5 +66,7 @@ Route::prefix('admin')->group(function() {
 
         Route::resource('slots', '\App\Http\Controllers\Admin\SlotController')->names('admin.slots');
         Route::resource('courts', '\App\Http\Controllers\Admin\CourtController')->names('admin.courts');
+
+        Route::post('/courtList', [CourtController::class, 'getCourtListBySports'])->name('admin.court.listBySports');
     });
 });

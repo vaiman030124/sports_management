@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Slot;
 use App\Models\Court;
+use App\Models\Sport;
 use Illuminate\Http\Request;
 
 class SlotController extends Controller
@@ -17,21 +18,23 @@ class SlotController extends Controller
 
     public function create()
     {
-        $courts = Court::all()->where('status', '1');
-        return view('admin.slots.create', compact('courts'));
+        $sports = Sport::all()->where('status', 'active')->pluck('sport_name', 'id');
+        return view('admin.slots.create', compact('sports'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'court_id' => 'required|exists:courts,id',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
-            // 'day_of_week' => 'required|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
-            'date' => 'required|date',
-            'status' => 'required|in:available,booked,maintenance',
-            'slot_type' => 'required|in:peak,non_peak',
-            'price' => 'required|decimal:2',
+            'sport_id' => 'required|exists:sports,sports.id',
+            'court_id' => 'required|exists:courts,courts.id',
+            'slot_date' => 'required|date',
+            'slot_time' => 'required|date_format:H:i',
+            'slot_end_time' => 'required|date_format:H:i|after:slot_time',
+            'is_member_slot' => 'required|in:1,0',
+            'max_players' => 'required|integer|min:4',
+            'available_slots' => 'required|integer|min:1',
+            'is_peak_hour' => 'required|in:1,0',
+            'status' => 'required|in:available,booked,blocked'
         ]);
 
         Slot::create($validated);
@@ -46,20 +49,24 @@ class SlotController extends Controller
 
     public function edit(Slot $slot)
     {
-        $courts = Court::all()->where('status', '1');
-        return view('admin.slots.edit', compact('slot', 'courts'));
+        $courts = Court::all()->where('status', 'active')->where('sport_id', $slot->sport_id);
+        $sports = Sport::all()->where('status', 'active')->pluck('sport_name', 'id');
+        return view('admin.slots.edit', compact('slot', 'courts', 'sports'));
     }
 
     public function update(Request $request, Slot $slot)
     {
         $validated = $request->validate([
-            'court_id' => 'required|exists:courts,id',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
-            'date' => 'required|date',
-            'status' => 'required|in:available,booked',
-            'slot_type' => 'required|in:peak,non_peak',
-            'price' => 'required|decimal:2',
+            'sport_id' => 'required|exists:sports,sports.id',
+            'court_id' => 'required|exists:courts,courts.id',
+            'slot_date' => 'required|date',
+            'slot_time' => 'required|date_format:H:i',
+            'slot_end_time' => 'required|date_format:H:i|after:slot_time',
+            'is_member_slot' => 'required|in:1,0',
+            'max_players' => 'required|integer|min:4',
+            'available_slots' => 'required|integer|min:1',
+            'is_peak_hour' => 'required|in:1,0',
+            'status' => 'required|in:available,booked,blocked'
         ]);
 
         $slot->update($validated);

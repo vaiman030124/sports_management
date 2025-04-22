@@ -35,10 +35,15 @@
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Sport</th>
                             <th>Court</th>
                             <th>Date</th>
                             <th>Start Time</th>
                             <th>End Time</th>
+                            <th>Is Member Slot</th>
+                            <th>Max Player</th>
+                            <th>Available Slot</th>
+                            <th>Is Peak Hour</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -47,12 +52,25 @@
                         @foreach($slots as $slot)
                         <tr>
                             <td>{{ $slot->id }}</td>
+                            <td>{{ $slot->sport->sport_name }}</td>
                             <td>{{ $slot->court->court_name }}</td>
-                            <td>{{ $slot->date }}</td>
-                            <td>{{ $slot->start_time }}</td>
-                            <td>{{ $slot->end_time }}</td>
+                            <td>{{ $slot->slot_date }}</td>
+                            <td>{{ $slot->slot_time }}</td>
+                            <td>{{ $slot->slot_end_time }}</td>
                             <td>
-                                <span class="badge badge-{{ $slot->status == 'available' ? 'success' : 'danger' }}">
+                                <span class="badge badge-{{ $slot->is_member_slot == '1' ? 'success' : 'danger' }}">
+                                    {{ $slot->is_member_slot == '1' ? 'Yes' : 'No' }}
+                                </span>
+                            </td>
+                            <td>{{ $slot->max_players }}</td>
+                            <td>{{ $slot->available_slots }}</td>
+                            <td>
+                                <span class="badge badge-{{ $slot->is_peak_hour == '1' ? 'success' : 'danger' }}">
+                                    {{ $slot->is_peak_hour == '1' ? 'Yes' : 'No' }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge badge-{{ $slot->status == 'available' ? 'success' : ($slot->status == 'booked' ? 'primary' : 'danger') }}">
                                     {{ ucfirst($slot->status) }}
                                 </span>
                             </td>

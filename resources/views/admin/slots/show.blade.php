@@ -38,25 +38,49 @@
                         <td>{{ $slot->id }}</td>
                     </tr>
                     <tr>
+                        <th>Sport</th>
+                        <td>{{ $slot->sport->sport_name }}</td>
+                    </tr>
+                    <tr>
                         <th>Court</th>
                         <td>{{ $slot->court->court_name }}</td>
                     </tr>
-                    <!-- <tr>
-                        <th>Day</th>
-                        <td>{{ ucfirst($slot->day_of_week) }}</td>
-                    </tr> -->
                     <tr>
                         <th>Date</th>
-                        <td>{{ $slot->date }}</td>
+                        <td>{{ $slot->slot_date }}</td>
                     </tr>
                     <tr>
                         <th>Time</th>
-                        <td>{{ $slot->start_time }} - {{ $slot->end_time }}</td>
+                        <td>{{ $slot->slot_time }} - {{ $slot->slot_end_time }}</td>
+                    </tr>
+                    <tr>
+                        <th>Is Member Slot</th>
+                        <td>
+                            <span class="badge badge-{{ $slot->is_member_slot == '1' ? 'success' : 'danger' }}">
+                                {{ $slot->is_member_slot == '1' ? 'Yes' : 'No' }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Max Player</th>
+                        <td>{{ $slot->max_players }}</td>
+                    </tr>
+                    <tr>
+                        <th>Available Slots</th>
+                        <td>{{ $slot->available_slots }}</td>
+                    </tr>
+                    <tr>
+                        <th>Is Peak Hour</th>
+                        <td>
+                            <span class="badge badge-{{ $slot->is_peak_hour == '1' ? 'success' : 'danger' }}">
+                                {{ $slot->is_peak_hour == '1' ? 'Yes' : 'No' }}
+                            </span>
+                        </td>
                     </tr>
                     <tr>
                         <th>Status</th>
                         <td>
-                            <span class="badge badge-{{ $slot->status == 'available' ? 'success' : ($slot->status == 'booked' ? 'danger' : 'warning') }}">
+                            <span class="badge badge-{{ $slot->status == 'available' ? 'success' : ($slot->status == 'booked' ? 'primary' : 'danger') }}">
                                 {{ ucfirst($slot->status) }}
                             </span>
                         </td>

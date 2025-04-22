@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="{{ asset('plugins/fontawesome-free/css/all.min.css') }}">
     <!-- AdminLTE -->
     <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
+    <!-- jQuery -->
+    <script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -25,8 +27,6 @@
     @include('admin.partials.footer')
 
 </div>
-<!-- jQuery -->
-<script src="{{ asset('plugins/jquery/jquery.min.js') }}"></script>
 <!-- Bootstrap 4 -->
 <script src="{{ asset('plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <!-- AdminLTE App -->
