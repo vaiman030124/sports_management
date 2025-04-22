@@ -36,9 +36,9 @@
                         <tr>
                             <th>ID</th>
                             <th>Court</th>
+                            <th>Date</th>
                             <th>Start Time</th>
                             <th>End Time</th>
-                            <th>Day of Week</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -47,16 +47,19 @@
                         @foreach($slots as $slot)
                         <tr>
                             <td>{{ $slot->id }}</td>
-                            <td>{{ $slot->court->name }}</td>
+                            <td>{{ $slot->court->court_name }}</td>
+                            <td>{{ $slot->date }}</td>
                             <td>{{ $slot->start_time }}</td>
                             <td>{{ $slot->end_time }}</td>
-                            <td>{{ ucfirst($slot->day_of_week) }}</td>
                             <td>
                                 <span class="badge badge-{{ $slot->status == 'available' ? 'success' : 'danger' }}">
                                     {{ ucfirst($slot->status) }}
                                 </span>
                             </td>
                             <td>
+                                <a href="{{ route('admin.slots.show', $slot) }}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <a href="{{ route('admin.slots.edit', $slot->id) }}" class="btn btn-sm btn-info">
                                     <i class="fas fa-edit"></i>
                                 </a>

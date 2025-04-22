@@ -36,8 +36,8 @@
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
-                            <th>Venue</th>
                             <th>Sport</th>
+                            <th>Type</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -46,15 +46,18 @@
                         @foreach($courts as $court)
                         <tr>
                             <td>{{ $court->id }}</td>
-                            <td>{{ $court->name }}</td>
-                            <td>{{ $court->venue->name }}</td>
-                            <td>{{ $court->sport->name }}</td>
+                            <td>{{ $court->court_name }}</td>
+                            <td>{{ $court->sport->sport_name }}</td>
+                            <td>{{ ucfirst($court->court_type) }}</td>
                             <td>
-                                <span class="badge badge-{{ $court->status == 'available' ? 'success' : 'danger' }}">
+                                <span class="badge badge-{{ $court->status == 'active' ? 'success' : 'danger' }}">
                                     {{ ucfirst($court->status) }}
                                 </span>
                             </td>
                             <td>
+                                <a href="{{ route('admin.courts.show', $court) }}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <a href="{{ route('admin.courts.edit', $court->id) }}" class="btn btn-sm btn-info">
                                     <i class="fas fa-edit"></i>
                                 </a>

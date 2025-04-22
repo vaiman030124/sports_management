@@ -62,5 +62,8 @@ Route::prefix('admin')->group(function() {
         Route::resource('notifications', '\App\Http\Controllers\Admin\NotificationController')->names('admin.notifications');
         Route::resource('refunds', '\App\Http\Controllers\Admin\RefundController')->names('admin.refunds');
         Route::resource('reviews', '\App\Http\Controllers\Admin\ReviewController')->names('admin.reviews');
+
+        Route::resource('slots', '\App\Http\Controllers\Admin\SlotController')->names('admin.slots');
+        Route::resource('courts', '\App\Http\Controllers\Admin\CourtController')->names('admin.courts');
     });
 });

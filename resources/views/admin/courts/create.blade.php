@@ -31,32 +31,43 @@
                 <div class="card-body">
                     <div class="form-group">
                         <label for="name">Court Name</label>
-                        <input type="text" class="form-control" id="name" name="name" 
-                               placeholder="Enter court name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="venue_id">Venue</label>
-                        <select class="form-control" id="venue_id" name="venue_id" required>
-                            @foreach($venues as $venue)
-                                <option value="{{ $venue->id }}">{{ $venue->name }}</option>
-                            @endforeach
-                        </select>
+                        <input type="text" class="form-control @error('court_name') is-invalid @enderror" id="court_name" name="court_name" placeholder="Enter Court name" required>
+                        @error('court_name')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label for="sport_id">Sport</label>
-                        <select class="form-control" id="sport_id" name="sport_id" required>
-                            @foreach($sports as $sport)
-                                <option value="{{ $sport->id }}">{{ $sport->name }}</option>
+                        <select class="form-control @error('sport_id') is-invalid @enderror" id="sport_id" name="sport_id" required>
+                            <option value="">Select</option>
+                            @foreach($sports as $k => $sport)
+                                <option value="{{ $k }}">{{ $sport }}</option>
                             @endforeach
                         </select>
+                        @error('sport_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="court_type">Court Type</label>
+                        <select class="form-control @error('court_type') is-invalid @enderror" id="court_type" name="court_type" required>
+                            <option value="shared">Shared</option>
+                            <option value="dedicated" selected>Dedicated</option>
+                        </select>
+                        @error('court_type')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                     <div class="form-group">
                         <label for="status">Status</label>
-                        <select class="form-control" id="status" name="status" required>
-                            <option value="available">Available</option>
-                            <option value="unavailable">Unavailable</option>
+                        <select class="form-control @error('status') is-invalid @enderror" id="status" name="status" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
                             <option value="maintenance">Maintenance</option>
                         </select>
+                        @error('status')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
                 <div class="card-footer">

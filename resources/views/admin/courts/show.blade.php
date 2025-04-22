@@ -42,20 +42,20 @@
                             </tr>
                             <tr>
                                 <th>Name</th>
-                                <td>{{ $court->name }}</td>
-                            </tr>
-                            <tr>
-                                <th>Venue</th>
-                                <td>{{ $court->venue->name }}</td>
+                                <td>{{ $court->court_name }}</td>
                             </tr>
                             <tr>
                                 <th>Sport</th>
-                                <td>{{ $court->sport->name }}</td>
+                                <td>{{ $court->sport->sport_name }}</td>
+                            </tr>
+                            <tr>
+                                <th>Court Type</th>
+                                <td>{{ ucfirst($court->court_type) }}</td>
                             </tr>
                             <tr>
                                 <th>Status</th>
                                 <td>
-                                    <span class="badge badge-{{ $court->status == 'available' ? 'success' : ($court->status == 'maintenance' ? 'warning' : 'danger') }}">
+                                    <span class="badge badge-{{ $court->status == 'active' ? 'success' : ($court->status == 'maintenance' ? 'warning' : 'danger') }}">
                                         {{ ucfirst($court->status) }}
                                     </span>
                                 </td>

@@ -39,11 +39,15 @@
                     </tr>
                     <tr>
                         <th>Court</th>
-                        <td>{{ $slot->court->name }}</td>
+                        <td>{{ $slot->court->court_name }}</td>
                     </tr>
-                    <tr>
+                    <!-- <tr>
                         <th>Day</th>
                         <td>{{ ucfirst($slot->day_of_week) }}</td>
+                    </tr> -->
+                    <tr>
+                        <th>Date</th>
+                        <td>{{ $slot->date }}</td>
                     </tr>
                     <tr>
                         <th>Time</th>

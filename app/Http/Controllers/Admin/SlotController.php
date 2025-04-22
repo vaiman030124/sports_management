@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Slot;
+use App\Models\Court;
 use Illuminate\Http\Request;
 
 class SlotController extends Controller
@@ -16,7 +17,8 @@ class SlotController extends Controller
 
     public function create()
     {
-        return view('admin.slots.create');
+        $courts = Court::all()->where('status', '1');
+        return view('admin.slots.create', compact('courts'));
     }
 
     public function store(Request $request)
@@ -25,14 +27,16 @@ class SlotController extends Controller
             'court_id' => 'required|exists:courts,id',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
-            'day_of_week' => 'required|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
-            'status' => 'required|in:available,booked,maintenance'
+            // 'day_of_week' => 'required|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+            'date' => 'required|date',
+            'status' => 'required|in:available,booked,maintenance',
+            'slot_type' => 'required|in:peak,non_peak',
+            'price' => 'required|decimal:2',
         ]);
 
         Slot::create($validated);
 
-        return redirect()->route('admin.slots.index')
-            ->with('success', 'Slot created successfully');
+        return redirect()->route('admin.slots.index')->with('success', 'Slot created successfully');
     }
 
     public function show(Slot $slot)
@@ -42,7 +46,8 @@ class SlotController extends Controller
 
     public function edit(Slot $slot)
     {
-        return view('admin.slots.edit', compact('slot'));
+        $courts = Court::all()->where('status', '1');
+        return view('admin.slots.edit', compact('slot', 'courts'));
     }
 
     public function update(Request $request, Slot $slot)
@@ -51,8 +56,10 @@ class SlotController extends Controller
             'court_id' => 'required|exists:courts,id',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
-            'day_of_week' => 'required|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
-            'status' => 'required|in:available,booked,maintenance'
+            'date' => 'required|date',
+            'status' => 'required|in:available,booked',
+            'slot_type' => 'required|in:peak,non_peak',
+            'price' => 'required|decimal:2',
         ]);
 
         $slot->update($validated);

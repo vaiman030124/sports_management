@@ -91,6 +91,18 @@
                         <p>Sports</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.slots.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-dice"></i>
+                        <p>Slot</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.courts.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-gamepad"></i>
+                        <p>Courts</p>
+                    </a>
+                </li>
 
                 <!-- Financial -->
                 <li class="nav-header">FINANCIAL</li>
