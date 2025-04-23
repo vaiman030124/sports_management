@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Sport;
+use App\Models\Venue;
 use Illuminate\Http\Request;
 
 class SportController extends Controller
@@ -14,22 +15,30 @@ class SportController extends Controller
     }
     public function index()
     {
-        $sports = Sport::paginate(15);
+        $sports = Sport::with('venue')->paginate(15);
         return view('admin.sports.index', compact('sports'));
     }
 
     public function create()
     {
-        return view('admin.sports.create');
+        $venues = Venue::all();
+        return view('admin.sports.create', compact('venues'));
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|in:active,inactive'
+            'sport_name' => 'required|string|max:255',
+            'venue_id' => 'required|exists:venues,id',
+            'court_count' => 'required|integer|min:0',
+            'shared_with' => 'nullable|array',
+            'shared_with.*' => 'string',
+            'pricing_peak' => 'required|numeric|min:0',
+            'pricing_non_peak' => 'required|numeric|min:0',
+            'status' => 'required|string|in:active,inactive',
         ]);
+
+        $validated['shared_with'] = $validated['shared_with'] ?? [];
 
         Sport::create($validated);
 
@@ -39,21 +48,30 @@ class SportController extends Controller
 
     public function show(Sport $sport)
     {
+        $sport->load('venue');
         return view('admin.sports.show', compact('sport'));
     }
 
     public function edit(Sport $sport)
     {
-        return view('admin.sports.edit', compact('sport'));
+        $venues = Venue::all();
+        return view('admin.sports.edit', compact('sport', 'venues'));
     }
 
     public function update(Request $request, Sport $sport)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'status' => 'required|in:active,inactive'
+            'sport_name' => 'required|string|max:255',
+            'venue_id' => 'required|exists:venues,id',
+            'court_count' => 'required|integer|min:0',
+            'shared_with' => 'nullable|array',
+            'shared_with.*' => 'string',
+            'pricing_peak' => 'required|numeric|min:0',
+            'pricing_non_peak' => 'required|numeric|min:0',
+            'status' => 'required|string|in:active,inactive',
         ]);
+
+        $validated['shared_with'] = $validated['shared_with'] ?? [];
 
         $sport->update($validated);
 

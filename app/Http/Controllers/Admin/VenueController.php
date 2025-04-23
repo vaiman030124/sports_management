@@ -23,10 +23,22 @@ class VenueController extends Controller
     {
         $validated = $request->validate([
             'venue_name' => 'required|string|max:255',
-            'location' => 'required|string',
+            'location' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'status' => 'required'
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'status' => 'required|in:active,inactive',
+            'capacity' => 'required|integer|min:0',
         ]);
+
+        if ($request->hasFile('images')) {
+            $imagePaths = [];
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('venues', 'public');
+                $imagePaths[] = $path;
+            }
+            $validated['images'] = $imagePaths;
+        }
 
         Venue::create($validated);
 
@@ -48,10 +60,25 @@ class VenueController extends Controller
     {
         $validated = $request->validate([
             'venue_name' => 'required|string|max:255',
-            'location' => 'required|string',
+            'location' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'status' => 'required'
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'status' => 'required|in:active,inactive',
+            'capacity' => 'required|integer|min:0',
         ]);
+
+        if ($request->hasFile('images')) {
+            $imagePaths = [];
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('venues', 'public');
+                $imagePaths[] = $path;
+            }
+            $validated['images'] = $imagePaths;
+        } else {
+            // Keep existing images if no new images uploaded
+            $validated['images'] = $venue->images;
+        }
 
         $venue->update($validated);
 

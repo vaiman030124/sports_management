@@ -1,7 +1,5 @@
 @extends('admin.layout')
 
-@section('title', 'Venues Management')
-
 @section('content')
 <div class="content-header">
     <div class="container-fluid">
@@ -18,25 +16,24 @@
         </div>
     </div>
 </div>
-
 <section class="content">
     <div class="container-fluid">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Venues List</h3>
-                <div class="card-tools">
-                    <a href="{{ route('admin.venues.create') }}" class="btn btn-primary">
-                        <i class="fas fa-plus"></i> Add New
-                    </a>
-                </div>
+                <h3 class="card-title">Venues</h3>
+                <a href="{{ route('admin.venues.create') }}" class="btn btn-primary float-right">
+                    <i class="fas fa-plus"></i> Add Venue
+                </a>
             </div>
             <div class="card-body">
-                <table class="table table-bordered table-hover">
+                @if(isset($venues) && $venues->count())
+                <table class="table table-bordered">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Name</th>
+                            <th>Venue Name</th>
                             <th>Location</th>
+                            <th>Capacity</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -47,22 +44,29 @@
                             <td>{{ $venue->id }}</td>
                             <td>{{ $venue->venue_name }}</td>
                             <td>{{ $venue->location }}</td>
+                            <td>{{ $venue->capacity }}</td>
                             <td>
-                                <span class="badge badge-{{ $venue->status == '0' ? 'success' : 'danger' }}">
-                                    {{ ucfirst($venue->status) }}
-                                </span>
-                            </td>
+                            @if(strtolower($venue->status) === 'active')
+                                <span class="badge badge-success">Active</span>
+                            @elseif(strtolower($venue->status) === 'inactive')
+                                <span class="badge badge-danger">Inactive</span>
+                            @elseif(strtolower($venue->status) === 'maintenance')
+                                <span class="badge badge-warning">Maintenance</span>
+                            @else
+                                <span class="badge badge-secondary">{{ ucfirst($venue->status) }}</span>
+                            @endif
+                        </td>
                             <td>
                                 <a href="{{ route('admin.venues.show', $venue) }}" class="btn btn-info btn-sm">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('admin.venues.edit', $venue->id) }}" class="btn btn-sm btn-info">
+                                <a href="{{ route('admin.venues.edit', $venue) }}" class="btn btn-primary btn-sm">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                <form action="{{ route('admin.venues.destroy', $venue->id) }}" method="POST" style="display:inline;">
+                                <form action="{{ route('admin.venues.destroy', $venue) }}" method="POST" style="display:inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
@@ -71,6 +75,10 @@
                         @endforeach
                     </tbody>
                 </table>
+                {{ $venues->links() }}
+                @else
+                <div class="alert alert-info">No venues found</div>
+                @endif
             </div>
         </div>
     </div>

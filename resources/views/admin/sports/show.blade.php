@@ -1,13 +1,11 @@
 @extends('admin.layout')
 
-@section('title', 'Sport Details')
-
 @section('content')
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Sport Details</h1>
+                <h1 class="m-0">Sport: {{ $sport->sport_name }}</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -19,12 +17,11 @@
         </div>
     </div>
 </div>
-
 <section class="content">
     <div class="container-fluid">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">{{ $sport->name }}</h3>
+                <h3 class="card-title">Sport Details</h3>
                 <div class="card-tools">
                     <a href="{{ route('admin.sports.edit', $sport->id) }}" class="btn btn-sm btn-info">
                         <i class="fas fa-edit"></i> Edit
@@ -32,36 +29,32 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h4>Basic Information</h4>
-                        <table class="table table-bordered">
-                            <tr>
-                                <th>ID</th>
-                                <td>{{ $sport->id }}</td>
-                            </tr>
-                            <tr>
-                                <th>Name</th>
-                                <td>{{ $sport->name }}</td>
-                            </tr>
-                            <tr>
-                                <th>Status</th>
-                                <td>
-                                    <span class="badge badge-{{ $sport->status == 'active' ? 'success' : 'danger' }}">
-                                        {{ ucfirst($sport->status) }}
-                                    </span>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="col-md-6">
-                        <h4>Description</h4>
-                        <p>{{ $sport->description ?? 'No description available' }}</p>
-                    </div>
-                </div>
+                <p><strong>Sport Name:</strong> {{ $sport->sport_name }}</p>
+                <p><strong>Venue:</strong> {{ $sport->venue ? $sport->venue->venue_name : '' }}</p>
+                <p><strong>Court Count:</strong> {{ $sport->court_count }}</p>
+                <p><strong>Shared With:</strong> 
+                    @if(is_array($sport->shared_with))
+                        {{ implode(', ', $sport->shared_with) }}
+                    @else
+                        {{ $sport->shared_with }}
+                    @endif
+                </p>
+                <p><strong>Pricing Peak:</strong> {{ $sport->pricing_peak }}</p>
+                <p><strong>Pricing Non Peak:</strong> {{ $sport->pricing_non_peak }}</p>
+                <p><strong>Status:</strong> {{ ucfirst($sport->status) }}</p>
             </div>
             <div class="card-footer">
-                <a href="{{ route('admin.sports.index') }}" class="btn btn-default">Back to List</a>
+                <a href="{{ route('admin.sports.edit', $sport->id) }}" class="btn btn-info">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <form action="{{ route('admin.sports.destroy', $sport->id) }}" method="POST" style="display:inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this sport?');">Delete Sport</button>
+                </form>
+                <a href="{{ route('admin.sports.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
             </div>
         </div>
     </div>

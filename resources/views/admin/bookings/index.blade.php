@@ -36,7 +36,11 @@
                         <tr>
                             <th>ID</th>
                             <th>User</th>
+                            <th>Group</th>
+                            <th>Trainer</th>
+                            <th>Venue</th>
                             <th>Court</th>
+                            <th>Sport</th>
                             <th>Date</th>
                             <th>Time Slot</th>
                             <th>Status</th>
@@ -48,9 +52,13 @@
                         <tr>
                             <td>{{ $booking->id }}</td>
                             <td>{{ $booking->user->name ?? 'N/A' }}</td>
-                            <td>{{ $booking->court->name ?? 'N/A' }}</td>
-                            <td>{{ $booking->booking_date }}</td>
-                            <td>{{ $booking->slot->start_time }} - {{ $booking->slot->end_time }}</td>
+                            <td>{{ $booking->group->group_name ?? 'N/A' }}</td>
+                            <td>{{ $booking->trainer->name ?? 'N/A' }}</td>
+                            <td>{{ $booking->venue->venue_name ?? 'N/A' }}</td>
+                            <td>{{ $booking->court->court_name ?? 'N/A' }}</td>
+                            <td>{{ $booking->sport->sport_name ?? 'N/A' }}</td>
+                            <td>{{ $booking->booking_date->format('Y-m-d') }}</td>
+                            <td>{{ $booking->slot->slot_time ?? '' }} - {{ $booking->slot->slot_end_time ?? '' }}</td>
                             <td>
                                 <span class="badge badge-{{ $booking->status == 'confirmed' ? 'success' : 'warning' }}">
                                     {{ ucfirst($booking->status) }}

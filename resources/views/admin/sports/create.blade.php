@@ -1,7 +1,5 @@
 @extends('admin.layout')
 
-@section('title', 'Create New Sport')
-
 @section('content')
 <div class="content-header">
     <div class="container-fluid">
@@ -29,27 +27,101 @@
             <form action="{{ route('admin.sports.store') }}" method="POST">
                 @csrf
                 <div class="card-body">
-                    <div class="form-group">
-                        <label for="name">Sport Name</label>
-                        <input type="text" class="form-control" id="name" name="name" 
-                               placeholder="Enter sport name" required>
+                    <div class="row">
+                        {{-- Sport Name --}}
+                        <div class="form-group col-md-6">
+                            <label for="sport_name">Sport Name</label>
+                            <input type="text" class="form-control @error('sport_name') is-invalid @enderror" id="sport_name" name="sport_name" value="{{ old('sport_name') }}">
+                            @error('sport_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Venue --}}
+                        <div class="form-group col-md-6">
+                            <label for="venue_id">Venue</label>
+                            <select class="form-control @error('venue_id') is-invalid @enderror" id="venue_id" name="venue_id">
+                                <option value="">Select Venue</option>
+                                @foreach($venues as $venue)
+                                    <option value="{{ $venue->id }}" {{ old('venue_id') == $venue->id ? 'selected' : '' }}>{{ $venue->venue_name }}</option>
+                                @endforeach
+                            </select>
+                            @error('venue_id')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea class="form-control" id="description" name="description" 
-                                  rows="3" placeholder="Enter description"></textarea>
+
+                    <div class="row">
+                        {{-- Pricing Peak --}}
+                        <div class="form-group col-md-6">
+                            <label for="pricing_peak">Pricing Peak</label>
+                            <input type="text" class="form-control @error('pricing_peak') is-invalid @enderror" id="pricing_peak" name="pricing_peak" value="{{ old('pricing_peak') }}">
+                            @error('pricing_peak')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Pricing Non Peak --}}
+                        <div class="form-group col-md-6">
+                            <label for="pricing_non_peak">Pricing Non Peak</label>
+                            <input type="text" class="form-control @error('pricing_non_peak') is-invalid @enderror" id="pricing_non_peak" name="pricing_non_peak" value="{{ old('pricing_non_peak') }}">
+                            @error('pricing_non_peak')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="status">Status</label>
-                        <select class="form-control" id="status" name="status" required>
-                            <option value="active">Active</option>
-                            <option value="inactive">Inactive</option>
-                        </select>
+
+                    <div class="row">
+                        {{-- Court Count --}}
+                        <div class="form-group col-md-6">
+                            <label for="court_count">Court Count</label>
+                            <input type="number" class="form-control @error('court_count') is-invalid @enderror" id="court_count" name="court_count" value="{{ old('court_count') }}">
+                            @error('court_count')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Shared With --}}
+                        <div class="form-group col-md-6">
+                            <label>Shared With</label>
+                            <div class="form-check">
+                                <input class="form-check-input @error('shared_with') is-invalid @enderror" type="checkbox" name="shared_with[]" id="shared_with_public" value="public" {{ (is_array(old('shared_with')) && in_array('public', old('shared_with'))) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="shared_with_public">Public</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input @error('shared_with') is-invalid @enderror" type="checkbox" name="shared_with[]" id="shared_with_members" value="members" {{ (is_array(old('shared_with')) && in_array('members', old('shared_with'))) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="shared_with_members">Members</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input @error('shared_with') is-invalid @enderror" type="checkbox" name="shared_with[]" id="shared_with_guests" value="guests" {{ (is_array(old('shared_with')) && in_array('guests', old('shared_with'))) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="shared_with_guests">Guests</label>
+                            </div>
+                            @error('shared_with')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        {{-- Status --}}
+                        <div class="form-group col-md-6">
+                            <label for="status">Status</label>
+                            <select class="form-control @error('status') is-invalid @enderror" id="status" name="status">
+                                <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                            </select>
+                            @error('status')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                    <a href="{{ route('admin.sports.index') }}" class="btn btn-default">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Create Sport</button>
+                    <a href="{{ route('admin.sports.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
                 </div>
             </form>
         </div>

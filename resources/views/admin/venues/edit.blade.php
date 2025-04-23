@@ -1,13 +1,11 @@
 @extends('admin.layout')
 
-@section('title', 'Edit Venue')
-
 @section('content')
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Edit Venue</h1>
+                <h1 class="m-0">Edit Venue: {{ $venue->venue_name }}</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -24,44 +22,100 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Edit Venue Details</h3>
+                <h3 class="card-title">Venue Details</h3>
             </div>
-            <form action="{{ route('admin.venues.update', $venue->id) }}" method="POST">
+            <form action="{{ route('admin.venues.update', $venue->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="card-body">
-                    <div class="form-group">
-                        <label for="venue_name">Venue Name</label>
-                        <input type="text" class="form-control" id="venue_name" name="venue_name" 
-                               value="{{ old('venue_name', $venue->venue_name) }}" required>
+                    <div class="row">
+                        {{-- Venue Name --}}
+                        <div class="form-group col-md-6">
+                            <label for="venue_name">Venue Name *</label>
+                            <input type="text" class="form-control @error('venue_name') is-invalid @enderror" id="venue_name" name="venue_name" value="{{ old('venue_name', $venue->venue_name) }}">
+                            @error('venue_name')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Location --}}
+                        <div class="form-group col-md-6">
+                            <label for="location">Location *</label>
+                            <input type="text" class="form-control @error('location') is-invalid @enderror" id="location" name="location" value="{{ old('location', $venue->location) }}">
+                            @error('location')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="location">Location</label>
-                        <input type="text" class="form-control" id="location" name="location" 
-                               value="{{ old('location', $venue->location) }}" required>
+
+                    <div class="row">
+                        {{-- Description --}}
+                        <div class="form-group col-md-12">
+                            <label for="description">Description</label>
+                            <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description">{{ old('description', $venue->description) }}</textarea>
+                            @error('description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="capacity">Capacity</label>
-                        <input type="number" class="form-control" id="capacity" name="capacity" 
-                               value="{{ old('capacity', $venue->capacity) }}" required>
+
+                    <div class="row">
+                        {{-- Existing Images --}}
+                        @if($venue->images && count($venue->images) > 0)
+                            <div class="form-group col-md-12">
+                                <label>Existing Images</label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    @foreach($venue->images as $image)
+                                        <img src="{{ asset('storage/' . $image) }}" alt="Venue Image" class="img-thumbnail" style="width: 120px; height: 120px; object-fit: cover;">
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                     </div>
-                    <div class="form-group">
-                        <label for="description">Description</label>
-                        <textarea class="form-control" id="description" name="description" 
-                                  rows="3">{{ old('description', $venue->description) }}</textarea>
+
+                    <div class="row">
+                        {{-- Images --}}
+                        <div class="form-group col-md-12">
+                            <label for="images">Add New Images</label>
+                            <input type="file" class="form-control-file @error('images') is-invalid @enderror" id="images" name="images[]" multiple>
+                            @error('images')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                            @error('images.*')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="status">Status</label>
-                        <select class="form-control" id="status" name="status" required>
-                            <option value="1" {{ $venue->status == 'available' ? 'selected' : '' }}>Available</option>
-                            <option value="0" {{ $venue->status == 'unavailable' ? 'selected' : '' }}>Unavailable</option>
-                            <option value="2" {{ $venue->status == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
-                        </select>
+
+                    <div class="row">
+                        {{-- Status --}}
+                        <div class="form-group col-md-6">
+                            <label for="status">Status *</label>
+                            <select class="form-control @error('status') is-invalid @enderror" id="status" name="status">
+                                <option value="active" {{ old('status', $venue->status) == 'active' ? 'selected' : '' }}>Active</option>
+                                <option value="inactive" {{ old('status', $venue->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                <option value="maintenance" {{ old('status', $venue->status) == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
+                            </select>
+                            @error('status')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Capacity --}}
+                        <div class="form-group col-md-6">
+                            <label for="capacity">Capacity *</label>
+                            <input type="number" class="form-control @error('capacity') is-invalid @enderror" id="capacity" name="capacity" value="{{ old('capacity', $venue->capacity) }}">
+                            @error('capacity')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Update</button>
-                    <a href="{{ route('admin.venues.index') }}" class="btn btn-default">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Update Venue</button>
+                    <a href="{{ route('admin.venues.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
                 </div>
             </form>
         </div>

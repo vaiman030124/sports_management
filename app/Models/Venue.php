@@ -12,6 +12,7 @@ class Venue extends Model
         'description',
         'images',
         'status',
+        'capacity',
     ];
 
     protected $casts = [

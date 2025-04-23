@@ -23,6 +23,9 @@ class Booking extends Model
         'status',
         'payment_id',
         'refund_id',
+        'venue_id',
+        'group_id',
+        'trainer_id',
     ];
 
     protected $casts = [
@@ -36,6 +39,21 @@ class Booking extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
+
+    public function trainer()
+    {
+        return $this->belongsTo(Trainer::class);
+    }
+
+    public function venue()
+    {
+        return $this->belongsTo(Venue::class);
     }
 
     public function sport()
