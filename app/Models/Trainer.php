@@ -29,6 +29,11 @@ class Trainer extends Model
         return $this->hasMany(TrainerBooking::class);
     }
 
+    public function trainerSport()
+    {
+        return $this->belongsTo(Sport::class, 'sports');
+    }
+
     public function adminUser()
     {
         return $this->belongsTo(AdminUser::class, 'admin_user_id');

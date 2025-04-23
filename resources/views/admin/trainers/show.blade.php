@@ -43,19 +43,23 @@
                     </tr>
                     <tr>
                         <th>Email</th>
-                        <td>{{ $trainer->email }}</td>
+                        <td>{{ $trainer->adminUser->email }}</td>
                     </tr>
                     <tr>
-                        <th>Phone</th>
-                        <td>{{ $trainer->phone }}</td>
+                        <th>Sport</th>
+                        <td>{{ $trainer->trainerSport->sport_name }}</td>
                     </tr>
                     <tr>
-                        <th>Specialization</th>
-                        <td>{{ $trainer->specialization }}</td>
+                        <th>Is kid trainer</th>
+                        <td>{{ $trainer->is_kid_trainer == 1 ? 'Yes' : 'No'}}</td>
                     </tr>
                     <tr>
-                        <th>Experience</th>
-                        <td>{{ $trainer->experience }} years</td>
+                        <th>Is adult trainer</th>
+                        <td>{{ $trainer->is_adult_trainer == 1 ? 'Yes' : 'No'}}</td>
+                    </tr>
+                    <tr>
+                        <th>Description</th>
+                        <td>{{ $trainer->description }}</td>
                     </tr>
                     <tr>
                         <th>Status</th>
@@ -68,7 +72,21 @@
                 </table>
             </div>
             <div class="card-footer">
-                <a href="{{ route('admin.trainers.index') }}" class="btn btn-default">Back to List</a>
+                <a href="{{ route('admin.trainers.edit', $trainer) }}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+
+                <form action="{{ route('admin.trainers.destroy', $trainer) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this trainer?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </form>
+
+                <a href="{{ route('admin.trainers.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
             </div>
         </div>
     </div>

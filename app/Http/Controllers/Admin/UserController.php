@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -79,8 +80,8 @@ class UserController extends Controller
 
         if ($request->hasFile('profile_image')) {
             // Optional: delete old image
-            if ($user->profile_image && \Storage::exists($user->profile_image)) {
-                \Storage::delete($user->profile_image);
+            if ($user->profile_image && Storage::exists($user->profile_image)) {
+                Storage::delete($user->profile_image);
             }
 
             $path = $request->file('profile_image')->store('profile_images', 'public');
