@@ -7,7 +7,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Trainer Booking #{{ $booking->id }}</h1>
+                <h1 class="m-0">Trainer Booking #{{ $trainerBooking->id }}</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -26,7 +26,7 @@
             <div class="card-header">
                 <h3 class="card-title">Booking Information</h3>
                 <div class="card-tools">
-                    <a href="{{ route('admin.trainer_bookings.edit', $booking->id) }}" class="btn btn-sm btn-info">
+                    <a href="{{ route('admin.trainer_bookings.edit', $trainerBooking->id) }}" class="btn btn-sm btn-info">
                         <i class="fas fa-edit"></i> Edit
                     </a>
                 </div>
@@ -37,19 +37,27 @@
                         <table class="table table-bordered">
                             <tr>
                                 <th>ID</th>
-                                <td>{{ $booking->id }}</td>
+                                <td>{{ $trainerBooking->id }}</td>
                             </tr>
                             <tr>
                                 <th>User</th>
-                                <td>{{ $booking->user->name }}</td>
+                                <td>{{ $trainerBooking->user->name }}</td>
                             </tr>
                             <tr>
                                 <th>Trainer</th>
-                                <td>{{ $booking->trainer->name }}</td>
+                                <td>{{ $trainerBooking->trainer->name }}</td>
                             </tr>
                             <tr>
                                 <th>Booking Date</th>
-                                <td>{{ $booking->booking_date->format('M d, Y') }}</td>
+                                <td>{{ $trainerBooking->booking_date->format('M d, Y') }}</td>
+                            </tr>
+                            <tr>
+                                <th>Booking Time</th>
+                                <td>{{ $trainerBooking->booking_time }}</td>
+                            </tr>
+                            <tr>
+                                <th>Booking End Time</th>
+                                <td>{{ $trainerBooking->booking_end_time }}</td>
                             </tr>
                         </table>
                     </div>
@@ -58,26 +66,20 @@
                             <tr>
                                 <th>Status</th>
                                 <td>
-                                    <span class="badge badge-{{ $booking->status == 'confirmed' ? 'success' : ($booking->status == 'pending' ? 'warning' : 'danger') }}">
-                                        {{ ucfirst($booking->status) }}
+                                    <span class="badge badge-{{ $trainerBooking->status == 'confirmed' ? 'success' : ($trainerBooking->status == 'pending' ? 'warning' : 'danger') }}">
+                                        {{ ucfirst($trainerBooking->status) }}
                                     </span>
                                 </td>
                             </tr>
                             <tr>
                                 <th>Created At</th>
-                                <td>{{ $booking->created_at->format('M d, Y H:i') }}</td>
+                                <td>{{ $trainerBooking->created_at->format('M d, Y H:i') }}</td>
                             </tr>
                             <tr>
                                 <th>Updated At</th>
-                                <td>{{ $booking->updated_at->format('M d, Y H:i') }}</td>
+                                <td>{{ $trainerBooking->updated_at->format('M d, Y H:i') }}</td>
                             </tr>
                         </table>
-                    </div>
-                </div>
-                <div class="form-group mt-3">
-                    <label>Notes</label>
-                    <div class="p-2 border rounded">
-                        {{ $booking->notes ?? 'No notes available' }}
                     </div>
                 </div>
             </div>

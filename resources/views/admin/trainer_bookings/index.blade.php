@@ -38,6 +38,8 @@
                             <th>User</th>
                             <th>Trainer</th>
                             <th>Booking Date</th>
+                            <th>Booking Time</th>
+                            <th>Booking End Time</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -49,12 +51,17 @@
                             <td>{{ $booking->user->name }}</td>
                             <td>{{ $booking->trainer->name }}</td>
                             <td>{{ $booking->booking_date }}</td>
+                            <td>{{ $booking->booking_time }}</td>
+                            <td>{{ $booking->booking_end_time }}</td>
                             <td>
                                 <span class="badge badge-{{ $booking->status == 'confirmed' ? 'success' : 'danger' }}">
                                     {{ ucfirst($booking->status) }}
                                 </span>
                             </td>
                             <td>
+                                <a href="{{ route('admin.trainer_bookings.show', $booking) }}" class="btn btn-info btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 <a href="{{ route('admin.trainer_bookings.edit', $booking->id) }}" class="btn btn-sm btn-info">
                                     <i class="fas fa-edit"></i>
                                 </a>

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\TrainerBooking;
 use Illuminate\Http\Request;
+use App\Models\Trainer;
+use App\Models\User;
 
 class TrainerBookingController extends Controller
 {
@@ -16,7 +18,9 @@ class TrainerBookingController extends Controller
 
     public function create()
     {
-        return view('admin.trainer_bookings.create');
+        $users = User::all()->where('status', 'active')->pluck('name', 'id');
+        $trainers = Trainer::all()->where('status', 'active')->pluck('name', 'id');
+        return view('admin.trainer_bookings.create', compact('users', 'trainers'));
     }
 
     public function store(Request $request)
@@ -25,15 +29,14 @@ class TrainerBookingController extends Controller
             'user_id' => 'required|exists:users,id',
             'trainer_id' => 'required|exists:trainers,id',
             'booking_date' => 'required|date',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
+            'booking_time' => 'required|date_format:H:i',
+            'booking_end_time' => 'required|date_format:H:i|after:booking_time',
             'status' => 'required|in:pending,confirmed,cancelled,completed'
         ]);
 
         TrainerBooking::create($validated);
 
-        return redirect()->route('admin.trainer_bookings.index')
-            ->with('success', 'Trainer booking created successfully');
+        return redirect()->route('admin.trainer_bookings.index')->with('success', 'Trainer booking created successfully');
     }
 
     public function show(TrainerBooking $trainerBooking)
@@ -43,7 +46,9 @@ class TrainerBookingController extends Controller
 
     public function edit(TrainerBooking $trainerBooking)
     {
-        return view('admin.trainer_bookings.edit', compact('trainerBooking'));
+        $users = User::all()->where('status', 'active')->pluck('name', 'id');
+        $trainers = Trainer::all()->where('status', 'active')->pluck('name', 'id');
+        return view('admin.trainer_bookings.edit', compact('trainerBooking', 'users', 'trainers'));
     }
 
     public function update(Request $request, TrainerBooking $trainerBooking)
@@ -52,21 +57,19 @@ class TrainerBookingController extends Controller
             'user_id' => 'required|exists:users,id',
             'trainer_id' => 'required|exists:trainers,id',
             'booking_date' => 'required|date',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
+            'booking_time' => 'required|date_format:H:i',
+            'booking_end_time' => 'required|date_format:H:i|after:booking_time',
             'status' => 'required|in:pending,confirmed,cancelled,completed'
         ]);
 
         $trainerBooking->update($validated);
 
-        return redirect()->route('admin.trainer_bookings.index')
-            ->with('success', 'Trainer booking updated successfully');
+        return redirect()->route('admin.trainer_bookings.index')->with('success', 'Trainer booking updated successfully');
     }
 
     public function destroy(TrainerBooking $trainerBooking)
     {
         $trainerBooking->delete();
-        return redirect()->route('admin.trainer_bookings.index')
-            ->with('success', 'Trainer booking deleted successfully');
+        return redirect()->route('admin.trainer_bookings.index')->with('success', 'Trainer booking deleted successfully');
     }
 }

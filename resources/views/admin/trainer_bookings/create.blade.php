@@ -33,40 +33,72 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="user_id">User *</label>
-                                <select class="form-control" id="user_id" name="user_id" required>
-                                    @foreach($users as $user)
-                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                <select class="form-control @error('user_id') is-invalid @enderror" id="user_id" name="user_id" required>
+                                    <option value="">Select</option>
+                                    @foreach($users as $k =>$user)
+                                        <option value="{{ $k }}" {{ old('user_id') == $k ? "selected" : '' }}>{{ $user }}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="trainer_id">Trainer *</label>
-                                <select class="form-control" id="trainer_id" name="trainer_id" required>
-                                    @foreach($trainers as $trainer)
-                                        <option value="{{ $trainer->id }}">{{ $trainer->name }}</option>
-                                    @endforeach
-                                </select>
+                                @error('user_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="booking_date">Booking Date *</label>
-                                <input type="date" class="form-control" id="booking_date" name="booking_date" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="status">Status *</label>
-                                <select class="form-control" id="status" name="status" required>
-                                    <option value="pending">Pending</option>
-                                    <option value="confirmed">Confirmed</option>
-                                    <option value="cancelled">Cancelled</option>
-                                    <option value="completed">Completed</option>
+                                <label for="trainer_id">Trainer *</label>
+                                <select class="form-control @error('trainer_id') is-invalid @enderror" id="trainer_id" name="trainer_id" required>
+                                    <option value="">Select</option>
+                                    @foreach($trainers as $k => $trainer)
+                                        <option value="{{ $k }}" {{ old('trainer_id') == $k ? "selected" : '' }}>{{ $trainer }}</option>
+                                    @endforeach
                                 </select>
+                                @error('trainer_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="notes">Notes</label>
-                        <textarea class="form-control" id="notes" name="notes" rows="3" placeholder="Any special instructions"></textarea>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="booking_date">Booking Date *</label>
+                                <input type="date" class="form-control @error('booking_date') is-invalid @enderror" id="booking_date" name="booking_date" required value="{{ old('booking_date') }}">
+                                @error('booking_date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="booking_time">Booking Start Time *</label>
+                                <input type="time" class="form-control @error('booking_time') is-invalid @enderror" id="booking_time" name="booking_time" required value="{{ old('booking_time') }}">
+                                @error('booking_time')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="booking_end_time">Booking End Time *</label>
+                                <input type="time" class="form-control @error('booking_end_time') is-invalid @enderror" id="booking_end_time" name="booking_end_time" required value="{{ old('booking_end_time') }}">
+                                @error('booking_end_time')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="status">Status *</label>
+                                <select class="form-control @error('status') is-invalid @enderror" id="status" name="status" required value="{{ old('status') }}">
+                                    <option value="pending" {{ old('status') == "pending" ? "selected" : '' }}>Pending</option>
+                                    <option value="confirmed" {{ old('status') == "confirmed" ? "selected" : '' }}>Confirmed</option>
+                                    <option value="cancelled" {{ old('status') == "cancelled" ? "selected" : '' }}>Cancelled</option>
+                                    <option value="completed" {{ old('status') == "completed" ? "selected" : '' }}>Completed</option>
+                                </select>
+                                @error('status')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer">

@@ -7,7 +7,7 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1 class="m-0">Edit Booking #{{ $booking->id }}</h1>
+                <h1 class="m-0">Edit Booking #{{ $trainerBooking->id }}</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
@@ -26,7 +26,7 @@
             <div class="card-header">
                 <h3 class="card-title">Booking Details</h3>
             </div>
-            <form action="{{ route('admin.trainer_bookings.update', $booking->id) }}" method="POST">
+            <form action="{{ route('admin.trainer_bookings.update', $trainerBooking->id) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <div class="card-body">
@@ -34,45 +34,72 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="user_id">User *</label>
-                                <select class="form-control" id="user_id" name="user_id" required>
-                                    @foreach($users as $user)
-                                        <option value="{{ $user->id }}" {{ $booking->user_id == $user->id ? 'selected' : '' }}>
-                                            {{ $user->name }}
-                                        </option>
+                                <select class="form-control @error('user_id') is-invalid @enderror" id="user_id" name="user_id" required>
+                                    <option value="">Select</option>
+                                    @foreach($users as $k =>$user)
+                                        <option value="{{ $k }}" {{ old('user_id', $trainerBooking->user_id) == $k ? "selected" : '' }}>{{ $user }}</option>
                                     @endforeach
                                 </select>
+                                @error('user_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="trainer_id">Trainer *</label>
-                                <select class="form-control" id="trainer_id" name="trainer_id" required>
-                                    @foreach($trainers as $trainer)
-                                        <option value="{{ $trainer->id }}" {{ $booking->trainer_id == $trainer->id ? 'selected' : '' }}>
-                                            {{ $trainer->name }}
-                                        </option>
+                                <select class="form-control @error('trainer_id') is-invalid @enderror" id="trainer_id" name="trainer_id" required>
+                                    <option value="">Select</option>
+                                    @foreach($trainers as $k => $trainer)
+                                        <option value="{{ $k }}" {{ old('trainer_id', $trainerBooking->trainer_id) == $k ? "selected" : '' }}>{{ $trainer }}</option>
                                     @endforeach
                                 </select>
+                                @error('trainer_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
+                        </div>
+                        <div class="col-md-4">
                             <div class="form-group">
                                 <label for="booking_date">Booking Date *</label>
-                                <input type="date" class="form-control" id="booking_date" name="booking_date" 
-                                       value="{{ old('booking_date', $booking->booking_date) }}" required>
+                                <input type="date" class="form-control @error('booking_date') is-invalid @enderror" id="booking_date" name="booking_date" value="{{ old('booking_date', $trainerBooking->booking_date->format('Y-m-d')) }}" required>
+                                @error('booking_date')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="booking_time">Booking Start Time *</label>
+                                <input type="time" class="form-control @error('booking_time') is-invalid @enderror" id="booking_time" name="booking_time" required value="{{ old('booking_time', substr($trainerBooking->booking_time, 0, -3)) }}">
+                                @error('booking_time')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="booking_end_time">Booking End Time *</label>
+                                <input type="time" class="form-control @error('booking_end_time') is-invalid @enderror" id="booking_end_time" name="booking_end_time" required value="{{ old('booking_end_time', substr($trainerBooking->booking_end_time, 0, -3)) }}">
+                                @error('booking_end_time')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="status">Status *</label>
-                                <select class="form-control" id="status" name="status" required>
-                                    <option value="pending" {{ $booking->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                                    <option value="confirmed" {{ $booking->status == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
-                                    <option value="cancelled" {{ $booking->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                                    <option value="completed" {{ $booking->status == 'completed' ? 'selected' : '' }}>Completed</option>
+                                <select class="form-control @error('status') is-invalid @enderror" id="status" name="status" required value="{{ old('status') }}">
+                                    <option value="pending" {{ old('status', $trainerBooking->status) == "pending" ? "selected" : '' }}>Pending</option>
+                                    <option value="confirmed" {{ old('status', $trainerBooking->status) == "confirmed" ? "selected" : '' }}>Confirmed</option>
+                                    <option value="cancelled" {{ old('status', $trainerBooking->status) == "cancelled" ? "selected" : '' }}>Cancelled</option>
+                                    <option value="completed" {{ old('status', $trainerBooking->status) == "completed" ? "selected" : '' }}>Completed</option>
                                 </select>
+                                @error('status')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="notes">Notes</label>
-                        <textarea class="form-control" id="notes" name="notes" rows="3">{{ old('notes', $booking->notes) }}</textarea>
                     </div>
                 </div>
                 <div class="card-footer">
