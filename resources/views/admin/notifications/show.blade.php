@@ -44,12 +44,8 @@
                                 <td>{{ $notification->title }}</td>
                             </tr>
                             <tr>
-                                <th>Type</th>
-                                <td>
-                                    <span class="badge badge-info">
-                                        {{ ucfirst($notification->type) }}
-                                    </span>
-                                </td>
+                                <th>User</th>
+                                <td>{{ $notification->user->name }}</td>
                             </tr>
                         </table>
                     </div>
@@ -58,7 +54,7 @@
                             <tr>
                                 <th>Status</th>
                                 <td>
-                                    <span class="badge badge-{{ $notification->status == 'sent' ? 'success' : ($notification->status == 'scheduled' ? 'warning' : 'secondary') }}">
+                                    <span class="badge badge-{{ $notification->status == 'read' ? 'success' : 'secondary' }}">
                                         {{ ucfirst($notification->status) }}
                                     </span>
                                 </td>
@@ -77,12 +73,26 @@
                 <div class="form-group mt-3">
                     <label>Content</label>
                     <div class="p-3 bg-light rounded">
-                        {{ $notification->content }}
+                        {{ $notification->message }}
                     </div>
                 </div>
             </div>
             <div class="card-footer">
-                <a href="{{ route('admin.notifications.index') }}" class="btn btn-default">Back to List</a>
+                <a href="{{ route('admin.notifications.edit', $notification) }}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+
+                <form action="{{ route('admin.notifications.destroy', $notification) }}" method="POST" class="d-inline-block" onsubmit="return confirm('Are you sure you want to delete this notification?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </form>
+
+                <a href="{{ route('admin.notifications.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
             </div>
         </div>
     </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
@@ -16,7 +17,8 @@ class NotificationController extends Controller
 
     public function create()
     {
-        return view('admin.notifications.create');
+        $users = User::all()->where('status', 'active')->pluck('name', 'id');
+        return view('admin.notifications.create',compact('users'));
     }
 
     public function store(Request $request)
@@ -25,8 +27,7 @@ class NotificationController extends Controller
             'user_id' => 'required|exists:users,id',
             'title' => 'required|string|max:255',
             'message' => 'required|string',
-            'type' => 'required|in:system,booking,payment,reminder',
-            'is_read' => 'required|boolean'
+            'status' => 'required|in:unread,read'
         ]);
 
         Notification::create($validated);
@@ -42,7 +43,8 @@ class NotificationController extends Controller
 
     public function edit(Notification $notification)
     {
-        return view('admin.notifications.edit', compact('notification'));
+        $users = User::all()->where('status', 'active')->pluck('name', 'id');
+        return view('admin.notifications.edit', compact('notification','users'));
     }
 
     public function update(Request $request, Notification $notification)
@@ -51,20 +53,17 @@ class NotificationController extends Controller
             'user_id' => 'required|exists:users,id',
             'title' => 'required|string|max:255',
             'message' => 'required|string',
-            'type' => 'required|in:system,booking,payment,reminder',
-            'is_read' => 'required|boolean'
+            'status' => 'required|in:unread,read'
         ]);
 
         $notification->update($validated);
 
-        return redirect()->route('admin.notifications.index')
-            ->with('success', 'Notification updated successfully');
+        return redirect()->route('admin.notifications.index')->with('success', 'Notification updated successfully');
     }
 
     public function destroy(Notification $notification)
     {
         $notification->delete();
-        return redirect()->route('admin.notifications.index')
-            ->with('success', 'Notification deleted successfully');
+        return redirect()->route('admin.notifications.index')->with('success', 'Notification deleted successfully');
     }
 }

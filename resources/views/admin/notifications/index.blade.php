@@ -36,9 +36,9 @@
                         <tr>
                             <th>ID</th>
                             <th>Title</th>
-                            <th>Type</th>
+                            <th>User</th>
                             <th>Status</th>
-                            <th>Sent At</th>
+                            <th>Created at</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -47,24 +47,27 @@
                         <tr>
                             <td>{{ $notification->id }}</td>
                             <td>{{ $notification->title }}</td>
+                            <td>{{$notification->user->name}}</td>
                             <td>
-                                <span class="badge badge-info">
-                                    {{ ucfirst($notification->type) }}
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge badge-{{ $notification->status == 'sent' ? 'success' : 'warning' }}">
+                                <span class="badge badge-{{ $notification->status == 'read' ? 'success' : 'secondary' }}">
                                     {{ ucfirst($notification->status) }}
                                 </span>
                             </td>
                             <td>{{ $notification->created_at->format('M d, Y H:i') }}</td>
                             <td>
-                                <a href="{{ route('admin.notifications.edit', $notification->id) }}" class="btn btn-sm btn-info">
-                                    <i class="fas fa-edit"></i>
-                                </a>
                                 <a href="{{ route('admin.notifications.show', $notification->id) }}" class="btn btn-sm btn-primary">
                                     <i class="fas fa-eye"></i>
                                 </a>
+                                <a href="{{ route('admin.notifications.edit', $notification->id) }}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ route('admin.notifications.destroy', $notification->id) }}" method="POST" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                         @endforeach
