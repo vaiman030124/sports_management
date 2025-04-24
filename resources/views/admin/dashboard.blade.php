@@ -3,6 +3,12 @@
 @section('title', 'Dashboard')
 
 @section('content')
+<style type="text/css">
+    #sportWiseBookingCountChart {
+        height: 550px;
+    }
+</style>
+
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -161,7 +167,94 @@
                     </div>
                 </div>
             </section>
+
+            <section class="col-lg-12 connectedSortable">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Sport Booking Count</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="sportWiseBookingCountChart"></div>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 </section>
+
+<script type="text/javascript" src="{{ asset('plugins/highchart/highcharts.js') }}"></script>
+<script type="text/javascript" src="{{ asset('plugins/highchart/data.js') }}"></script>
+<script type="text/javascript" src="{{ asset('plugins/highchart/drilldown.js') }}"></script>
+<script type="text/javascript" src="{{ asset('plugins/highchart/exporting.js') }}"></script>
+<script type="text/javascript" src="{{ asset('plugins/highchart/export-data.js') }}"></script>
+<script type="text/javascript" src="{{ asset('plugins/highchart/accessibility.js') }}"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    setTimeout(() => {
+        loadSportWiseBooking();
+    }, 500);
+});
+
+function loadSportWiseBooking() {
+    $.ajax({
+        url : "{{ route('admin.spBook') }}",
+        data : { "_token": "{{ csrf_token() }}" },
+        type : 'GET',
+        dataType : 'JSON',
+        success : function(result) {
+            Highcharts.chart('sportWiseBookingCountChart', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Sports wise booking'
+                },
+                subtitle: {
+                    text: 'Charts shows the count of booking by Sport which is Pending/Confirmed'
+                },
+                accessibility: {
+                    announceNewData: {
+                        enabled: true
+                    }
+                },
+                xAxis: {
+                    type: 'category'
+                },
+                yAxis: {
+                    title: {
+                        text: 'Total booking'
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                plotOptions: {
+                    series: {
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.y}'
+                        }
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                    pointFormat: '<span style="color:{point.color}">{point.name}</span>: ' +
+                        '<b>{point.y}</b> Booking<br/>'
+                },
+                series: [
+                    {
+                        name: 'Sport',
+                        colorByPoint: true,
+                        data: result
+                    }
+                ]
+            });
+
+            $('.highcharts-credits, .highcharts-no-tooltip').hide();
+        }
+    });
+}
+</script>
 @endsection

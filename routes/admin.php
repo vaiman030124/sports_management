@@ -68,5 +68,8 @@ Route::prefix('admin')->group(function() {
         Route::resource('courts', '\App\Http\Controllers\Admin\CourtController')->names('admin.courts');
 
         Route::post('/courtList', [CourtController::class, 'getCourtListBySports'])->name('admin.court.listBySports');
+        Route::post('/courtList', [CourtController::class, 'getCourtListBySports'])->name('admin.court.listBySports');
+
+        Route::get('/spBook', [AdminController::class, 'sportWiseBooking'])->name('admin.spBook');
     });
 });
