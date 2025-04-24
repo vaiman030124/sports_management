@@ -30,40 +30,52 @@
                 @csrf
                 @method('PUT')
                 <div class="card-body">
-                    <div class="form-group">
-                        <label for="title">Title *</label>
-                        <input type="text" class="form-control" id="title" name="title" 
-                               value="{{ old('title', $notification->title) }}" required>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="title">Title *</label>
+                                <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title', $notification->title) }}">
+                                @error('title')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="user_id">User *</label>
+                                <select name="user_id" id="user_id" class="form-control @error('user_id') is-invalid @enderror" required>
+                                    @foreach($users as $k => $name)
+                                        <option value="{{ $k }}" {{ old('user_id', $notification->user_id) == $k ? 'selected' : '' }}>{{ $name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('user_id')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="status">Status *</label>
+                                <select class="form-control" id="status" name="status" required>
+                                    <option value="read" {{ $notification->status == 'read' ? 'selected' : '' }}>Read</option>
+                                    <option value="unread" {{ $notification->status == 'unread' ? 'selected' : '' }}>Unread</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="type">Type *</label>
-                        <select class="form-control" id="type" name="type" required>
-                            <option value="email" {{ $notification->type == 'email' ? 'selected' : '' }}>Email</option>
-                            <option value="sms" {{ $notification->type == 'sms' ? 'selected' : '' }}>SMS</option>
-                            <option value="push" {{ $notification->type == 'push' ? 'selected' : '' }}>Push Notification</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="status">Status *</label>
-                        <select class="form-control" id="status" name="status" required>
-                            <option value="draft" {{ $notification->status == 'draft' ? 'selected' : '' }}>Draft</option>
-                            <option value="scheduled" {{ $notification->status == 'scheduled' ? 'selected' : '' }}>Scheduled</option>
-                            <option value="sent" {{ $notification->status == 'sent' ? 'selected' : '' }}>Sent</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="send_at">Schedule Date/Time</label>
-                        <input type="datetime-local" class="form-control" id="send_at" name="send_at" 
-                               value="{{ old('send_at', $notification->send_at ? $notification->send_at->format('Y-m-d\TH:i') : '') }}">
-                    </div>
-                    <div class="form-group">
-                        <label for="content">Content *</label>
-                        <textarea class="form-control" id="content" name="content" rows="8" required>{{ old('content', $notification->content) }}</textarea>
+                        <label for="message">Message *</label>
+                        <textarea class="form-control" id="message" name="message" rows="8" required>{{ old('content', $notification->message) }}</textarea>
+                        @error('message')
+                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                        @enderror
                     </div>
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-primary">Update Notification</button>
-                    <a href="{{ route('admin.notifications.index') }}" class="btn btn-default">Cancel</a>
+                    <a href="{{ route('admin.notifications.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to List
+                    </a>
                 </div>
             </form>
         </div>
