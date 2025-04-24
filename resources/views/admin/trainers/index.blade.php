@@ -48,7 +48,7 @@
                             <td>{{ $trainer->id }}</td>
                             <td>{{ $trainer->name }}</td>
                             <td>{{ $trainer->adminUser->email }}</td>
-                            <td>{{ $trainer->trainerSport->sport_name }}</td>
+                            <td>{{ $trainer->trainerSport?->sport_name }}</td>
                             <td>
                                 <span class="badge badge-{{ $trainer->status == 'active' ? 'success' : 'danger' }}">
                                     {{ ucfirst($trainer->status) }}
