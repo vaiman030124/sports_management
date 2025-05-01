@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Booking;
+use App\Models\User;
+use App\Models\Venue;
+use App\Models\Transaction;
+use App\Models\Membership;
 
 class AdminController extends Controller
 {
@@ -53,7 +58,19 @@ class AdminController extends Controller
      */
     public function dashboard()
     {
-        return view('admin.dashboard');
+        $_totalBookings = Booking::whereNotIn('status', ['canceled'])->count();
+        $_totalUser = User::where('status', 'active')->count();
+        $_totalVenue = Venue::where('status', 'active')->count();
+        $_totalBookingRevenue = Transaction::whereNotIn('status', ['refunded', 'failed', 'pending'])->sum('amount');
+        $_totalMemberShipRevenue = Membership::leftJoin('membership_plans', 'memberships.plan_id', '=', 'membership_plans.id')->where('status', 'active')->whereRaw('? between start_date and end_date', [date('Y-m-d')])->sum('membership_plans.price');
+
+        // Get Recent Booking
+        $_recentBooking = Booking::whereNotIn('status', ['canceled'])->orderBy('id', 'DESC')->limit(10)->get();
+
+        // Get Recent Transaction
+        $_recentTransaction = Transaction::select('amount', 'status', 'transaction_date')->orderBy('id', 'DESC')->limit(10)->get();
+        
+        return view('admin.dashboard', compact('_totalBookings', '_totalUser', '_totalVenue', '_totalBookingRevenue', '_totalMemberShipRevenue', '_recentBooking', '_recentTransaction'));
     }
 
     /**
@@ -78,6 +95,48 @@ class AdminController extends Controller
             $data = [
                 "name" => 'No Sport',
                 "y" => '0',
+            ];
+
+            return response()->json($data);
+        }
+    }
+
+     /**
+     * Get booking event for calendar.
+     */
+    public function bookings()
+    {
+        try {
+            $data = Booking::whereNotIn('status', ['canceled', 'complete'])->get();
+
+            if(empty($data)) {
+                $data = [
+                    "status" => 0
+                ];
+            } else {
+                $events = [];
+                foreach ($data as $key => $value) {
+                    $events[] = array(
+                        'title' => $value->user->name,
+                        'start' => $value->booking_date->format('Y-m-d'),
+                        'end' => $value->booking_date->format('Y-m-d'),
+                        'venue' => $value->venue->venue_name,
+                        'court' => $value->court->court_name,
+                        'sport' => $value->sport->sport_name,
+                        'time_slot' => $value->slot->slot_time . " - " . $value->slot->slot_end_time,
+                    );
+                }
+
+                $data = [
+                    'status' => 1,
+                    'events' => $events
+                ];
+            }
+
+            return response()->json($data);
+        } catch (\Throwable $th) {
+            $data = [
+                "status" => 0
             ];
 
             return response()->json($data);

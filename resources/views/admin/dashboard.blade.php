@@ -3,9 +3,14 @@
 @section('title', 'Dashboard')
 
 @section('content')
+<link rel="stylesheet" href="{{ asset('plugins/fullcalendar/css/fullcalendar.min.css') }}">
 <style type="text/css">
     #sportWiseBookingCountChart {
         height: 550px;
+    }
+
+    .eventBody {
+        padding: 20px;
     }
 </style>
 
@@ -32,7 +37,7 @@
                 <!-- small box -->
                 <div class="small-box bg-info">
                     <div class="inner">
-                        <h3>150</h3>
+                        <h3>{{ $_totalBookings }}</h3>
                         <p>New Bookings</p>
                     </div>
                     <div class="icon">
@@ -48,7 +53,7 @@
                 <!-- small box -->
                 <div class="small-box bg-success">
                     <div class="inner">
-                        <h3>53</h3>
+                        <h3>{{ $_totalUser }}</h3>
                         <p>Active Users</p>
                     </div>
                     <div class="icon">
@@ -64,7 +69,7 @@
                 <!-- small box -->
                 <div class="small-box bg-warning">
                     <div class="inner">
-                        <h3>44</h3>
+                        <h3>{{ $_totalVenue }}</h3>
                         <p>Available Venues</p>
                     </div>
                     <div class="icon">
@@ -80,11 +85,27 @@
                 <!-- small box -->
                 <div class="small-box bg-danger">
                     <div class="inner">
-                        <h3>$12,345</h3>
-                        <p>Revenue</p>
+                        <h3><i class="fas fa-rupee-sign"></i>{{ number_format($_totalBookingRevenue, 2) }}</h3>
+                        <p>Booking Revenue</p>
                     </div>
                     <div class="icon">
-                        <i class="fas fa-dollar-sign"></i>
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                    <a href="{{ route('admin.transactions.index') }}" class="small-box-footer">
+                        More info <i class="fas fa-arrow-circle-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-primary">
+                    <div class="inner">
+                        <h3><i class="fas fa-rupee-sign"></i>{{ number_format($_totalMemberShipRevenue, 2) }}</h3>
+                        <p>Membership Revenue</p>
+                    </div>
+                    <div class="icon">
+                    <i class="fas fa-rupee-sign"></i>
                     </div>
                     <a href="{{ route('admin.transactions.index') }}" class="small-box-footer">
                         More info <i class="fas fa-arrow-circle-right"></i>
@@ -99,7 +120,11 @@
                 <!-- Recent Bookings -->
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Recent Bookings</h3>
+                        <h3 class="card-title">
+                            <a href="{{ route('admin.bookings.index') }}" class="small-box-footer">
+                                Recent Bookings
+                            </a>
+                        </h3>
                     </div>
                     <div class="card-body">
                         <table class="table table-bordered">
@@ -113,20 +138,19 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>John Doe</td>
-                                    <td>Main Pool</td>
-                                    <td>2025-05-15</td>
-                                    <td><span class="badge bg-success">Confirmed</span></td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>Jane Smith</td>
-                                    <td>Tennis Court 1</td>
-                                    <td>2025-05-16</td>
-                                    <td><span class="badge bg-warning">Pending</span></td>
-                                </tr>
+                                @foreach($_recentBooking as $bk => $booking)
+                                    <tr>
+                                        <td>{{ $bk + 1 }}</td>
+                                        <td>{{ $booking->user->name ?? 'N/A' }}</td>
+                                        <td>{{ $booking->venue->venue_name ?? 'N/A' }}</td>
+                                        <td>{{ $booking->booking_date->format('Y-m-d') }} {{ $booking->slot->slot_time ?? '' }} - {{ $booking->slot->slot_end_time ?? '' }}</td>
+                                        <td>
+                                            <span class="badge badge-{{ $booking->status == 'confirmed' ? 'success' : 'warning' }}">
+                                                {{ ucfirst($booking->status) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -150,18 +174,18 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>$120.00</td>
-                                    <td><span class="badge bg-success">Completed</span></td>
-                                    <td>2025-05-10</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>$85.50</td>
-                                    <td><span class="badge bg-danger">Refunded</span></td>
-                                    <td>2025-05-09</td>
-                                </tr>
+                                @foreach($_recentTransaction as $tk => $trans)
+                                    <tr>
+                                        <td>{{ $tk + 1 }}</td>
+                                        <td>{{ '$' . number_format($trans->amount) ?? 'N/A' }}</td>
+                                        <td>{{ $trans->transaction_date ?? 'N/A' }}</td>
+                                        <td>
+                                            <span class="badge badge-{{ $trans->status == 'completed' ? 'success' : 'danger' }}">
+                                                {{ ucfirst($trans->status) }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @endforeach
                             </tbody>
                         </table>
                     </div>
@@ -178,6 +202,17 @@
                     </div>
                 </div>
             </section>
+
+            <section class="col-lg-12 connectedSortable">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Bookings</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="booking-calendar"></div>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
 </section>
@@ -188,11 +223,13 @@
 <script type="text/javascript" src="{{ asset('plugins/highchart/exporting.js') }}"></script>
 <script type="text/javascript" src="{{ asset('plugins/highchart/export-data.js') }}"></script>
 <script type="text/javascript" src="{{ asset('plugins/highchart/accessibility.js') }}"></script>
+<script type="text/javascript" src="{{ asset('plugins/fullcalendar/js/fullcalendar.min.js') }}"></script>
 
 <script type="text/javascript">
 $(document).ready(function() {
     setTimeout(() => {
         loadSportWiseBooking();
+        renderBookingCalendar();
     }, 500);
 });
 
@@ -256,5 +293,70 @@ function loadSportWiseBooking() {
         }
     });
 }
+
+function renderBookingCalendar() {
+    var calendarEl = document.getElementById('booking-calendar');
+
+    $.ajax({
+        url : "{{ route('admin.calBookings') }}",
+        data : { "_token": "{{ csrf_token() }}" },
+        type : 'GET',
+        dataType : 'JSON',
+        success : function(result) {
+            var _ev = {};
+
+            if(result.status == "1") {
+                _ev = result.events;
+            }
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                editable: true,
+                selectable: true,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: _ev,
+                eventClick: function (info) {
+                    var _html = `<p><strong>Venue</strong> : `+ info.event.extendedProps.venue +`</p>
+                    <p><strong>Court</strong> : `+ info.event.extendedProps.court +`</p>
+                    <p><strong>Sport</strong> : `+ info.event.extendedProps.sport +`</p>
+                    <p><strong>Time Slot</strong> : `+ info.event.extendedProps.time_slot +`</p>`;
+
+                    $('.eventBody').html('');
+                    $('.eventBody').html(_html);
+
+                    $("#eventModal").modal('show');
+                }
+            });
+
+            calendar.render();
+        }
+    });
+}
+
+$(document).on('click', '.closeEvent', function() {
+    $("#eventModal").modal('hide');
+});
 </script>
+
+<div class="modal fade" id="eventModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Booking Info</h4>
+                <button type="button" class="close closeEvent" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="eventBody">
+            </div>
+            <div class="modal-footer justify-content-between">
+                <button type="button" class="btn btn-default closeEvent" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
