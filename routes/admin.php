@@ -66,6 +66,7 @@ Route::prefix('admin')->group(function() {
 
         Route::resource('slots', '\App\Http\Controllers\Admin\SlotController')->names('admin.slots');
         Route::resource('courts', '\App\Http\Controllers\Admin\CourtController')->names('admin.courts');
+        Route::resource('email-templates', '\App\Http\Controllers\Admin\EmailTemplateController')->names('admin.email-templates');
 
         Route::post('/courtList', [CourtController::class, 'getCourtListBySports'])->name('admin.court.listBySports');
         Route::post('/courtList', [CourtController::class, 'getCourtListBySports'])->name('admin.court.listBySports');
