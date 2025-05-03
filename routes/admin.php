@@ -6,11 +6,11 @@ use App\Http\Controllers\Admin\Auth\AdminForgotPasswordController;
 use App\Http\Controllers\Admin\Auth\AdminResetPasswordController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AdminUserController;
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\Admin\CourtController;
 
 Route::prefix('admin')->group(function() {
     // Authentication Routes
+    Route::get('login', [AdminLoginController::class, 'showLoginForm'])->name('login');
     Route::get('login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
     Route::post('login', [AdminLoginController::class, 'login'])->name('admin.login.post');
     Route::post('logout', [AdminLoginController::class, 'logout'])->name('admin.logout');

@@ -17,6 +17,11 @@ return [
             'driver' => 'session',
             'provider' => 'admin_users',
         ],
+
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+        ],
     ],
 
     'providers' => [

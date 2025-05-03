@@ -11,3 +11,5 @@ require __DIR__.'/admin.php';
 Route::redirect('/', 'admin/login');
 Route::redirect('/admin', 'admin/login');
 // Other web routes can be added here
+
+require __DIR__.'/api.php';
