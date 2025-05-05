@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Models\Venue;
 use App\Models\Sport;
 use App\Models\Court;
 use App\Models\Slot;
+use App\Models\Booking;
+use App\Models\Group;
 
 class ApiController extends Controller
 {
@@ -397,5 +400,175 @@ class ApiController extends Controller
         $slots = Slot::with('sport', 'court')->where('sport_id', $validated['sport_id'])->where('slot_date', $validated['slot_date'])->where('status', 'available')->get();
         
         return response()->json($slots);
+    }
+
+    /**
+     * Booking Management APIs.
+     */
+    public function bookSlots(Request $request)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'group_id' => 'nullable|exists:groups,id',
+            'trainer_id' => 'nullable|exists:trainers,id',
+            'venue_id' => 'nullable|exists:venues,id',
+            'court_id' => 'required|exists:courts,id',
+            'sport_id' => 'required|exists:sports,id',
+            'slot_id' => 'required|exists:slots,id',
+            'is_member_booking' => 'boolean',
+            'is_group_game' => 'boolean',
+            'game_id' => 'nullable|exists:games,id',
+            'membership_id' => 'nullable|exists:memberships,id',
+            'booking_date' => 'required|date',
+            'number_of_players' => 'required|integer|min:1',
+            'status' => 'required|in:pending,confirmed,cancelled,completed',
+            // 'payment_id' => 'nullable|exists:transactions,id',
+            // 'payment_status' => 'required|in:pending,paid,failed,refunded',
+            // 'refund_id' => 'nullable|exists:refunds,id',
+        ]);
+
+        Booking::create($validated);
+
+        return response()->json(["message" => "Your Slot Booked Successfully"]);
+    }
+
+    public function myBooking(Request $request)
+    {
+        $request['user_id'] = $request->user_id ?? '';
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $bookings = Booking::with('sport', 'court', 'slot', 'game', 'trainer', 'venue', 'group')->where('user_id', $validated['user_id'])->get();
+        
+        return response()->json($bookings);
+    }
+
+    public function bookingDetail(Request $request)
+    {
+        $request['booking_id'] = $request->id ?? '';
+        $validated = $request->validate([
+            'booking_id' => 'required|exists:bookings,id'
+        ]);
+
+        $bookings = Booking::with('sport', 'court', 'slot', 'game', 'trainer', 'venue', 'group')->where('id', $validated['booking_id'])->first();
+        
+        return response()->json($bookings);
+    }
+
+    public function cancelBooking(Request $request)
+    {
+        $request['booking_id'] = $request->id ?? '';
+        $request['status'] = 'canceled';
+        $validated = $request->validate([
+            'booking_id' => 'required|exists:bookings,id',
+            'status' => 'required|in:canceled',
+        ]);
+
+        Booking::updateOrCreate(['id' => $validated['booking_id']], $validated);
+        
+        return response()->json(["message" => "Booking cancelled successfully"]);
+    }
+
+    public function getBookings(Request $request)
+    {
+        $page = $request->page_number ?? 1;
+        $offSet = ($page - 1) * env('API_DATA_LIMIT');
+
+        $bookings = Booking::with('user', 'sport', 'court', 'slot', 'game', 'trainer', 'venue', 'group')->limit(env('API_DATA_LIMIT'))->offset($offSet)->get();
+        
+        return response()->json($bookings);
+    }
+
+    public function upStatusBooking(Request $request)
+    {
+        $request['booking_id'] = $request->id ?? '';
+        $validated = $request->validate([
+            'booking_id' => 'required|exists:bookings,id',
+            'status' => 'required|in:pending,confirmed,cancelled,completed',
+        ]);
+
+        Booking::updateOrCreate(['id' => $validated['booking_id']], $validated);
+        
+        return response()->json(["message" => "Booking status updated successfully"]);
+    }
+
+    /**
+     * Group Management APIs.
+     */
+    public function getMyGroups(Request $request)
+    {
+        $request['user_id'] = $request->user_id ?? '';
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $groups = DB::table('group_members')->select('group_id', 'group_name')->join('groups', function($query) {
+            $query->on('group_id', '=', 'id')->where('status', 'active');
+        })->where('user_id', $validated['user_id'])->get();
+        
+        return response()->json($groups);
+    }
+
+    public function createGroups(Request $request)
+    {
+        $validated = $request->validate([
+            'group_name' => 'required|string|max:255',
+            'created_by' => 'required|exists:users,id',
+            'status' => 'required|in:active,inactive'
+        ]);
+
+        Group::create($validated);
+
+        return response()->json(["message" => "Group created successfully"]);
+    }
+
+    public function getAllGroups(Request $request)
+    {
+        $page = $request->page_number ?? 1;
+        $offSet = ($page - 1) * env('API_DATA_LIMIT');
+
+        $groups = Group::with(['creator'])->select('created_by', 'group_name', 'status')->limit(env('API_DATA_LIMIT'))->offset($offSet)->get();
+        
+        return response()->json($groups);
+    }
+
+    public function joinGroup(Request $request)
+    {
+        $request['group_id'] = $request->id ?? '';
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'group_id' => 'required|exists:groups,id'
+        ]);
+
+        $checkEx = DB::table('group_members')->where('group_id', $validated['group_id'])->where('user_id', $validated['user_id'])->count();
+
+        if($checkEx > 0) {
+            return response()->json(["message" => "You Have already joined this group"]);
+        } else {
+            DB::table('group_members')->insert([
+                'group_id' => $validated['group_id'],
+                'user_id' => $validated['user_id']
+            ]);
+    
+            return response()->json(["message" => "Group joined successfully"]);
+        }
+    }
+
+    public function leaveGroup(Request $request)
+    {
+        $request['group_id'] = $request->id ?? '';
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'group_id' => 'required|exists:groups,id'
+        ]);
+
+        $affRow = DB::table('group_members')->where('group_id', $validated['group_id'])->where('user_id', $validated['user_id'])->delete();
+
+        if($affRow > 0) {
+            return response()->json(["message" => "Group leaved successfully"]);
+        } else {
+            return response()->json(["message" => "Something went wrong when leave the group"]);   
+        }
     }
 }

@@ -42,4 +42,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('slots/{id}', [ApiController::class, 'deleteSlots']);
     Route::post('slots/{id}/status', [ApiController::class, 'upStatusSlots']);
     Route::get('slots/{sport_id}/{date}', [ApiController::class, 'getSlotBySportDate']);
+
+    Route::post('bookings', [ApiController::class, 'bookSlots']);
+    Route::get('my-bookings', [ApiController::class, 'myBooking']);
+    Route::get('bookings/{id}', [ApiController::class, 'bookingDetail']);
+    Route::post('bookings/{id}/cancel', [ApiController::class, 'cancelBooking']);
+    Route::get('bookings', [ApiController::class, 'getBookings']);
+    Route::post('bookings/{id}/status', [ApiController::class, 'upStatusBooking']);
+
+    Route::get('groups', [ApiController::class, 'getMyGroups']);
+    Route::post('groups', [ApiController::class, 'createGroups']);
+    Route::get('all-groups', [ApiController::class, 'getAllGroups']); 
+    Route::post('groups/{id}/join', [ApiController::class, 'joinGroup']);
+    Route::post('groups/{id}/leave', [ApiController::class, 'leaveGroup']);
 });
