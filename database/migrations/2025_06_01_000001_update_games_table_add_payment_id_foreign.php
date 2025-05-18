@@ -18,6 +18,9 @@ return new class extends Migration
             $table->foreignId('payment_id')->nullable()->constrained('transactions')->nullOnDelete();
             $table->foreignId('refund_id')->nullable()->constrained('refunds')->nullOnDelete();
         });
+        Schema::table('transactions', function (Blueprint $table) {
+            $table->foreignId('trainer_booking_id')->nullable()->constrained('trainer_bookings')->nullOnDelete();
+        });
     }
 
     /**
@@ -34,6 +37,10 @@ return new class extends Migration
             $table->dropForeign(['refund_id']);
             $table->dropColumn('payment_id');
             $table->dropColumn('refund_id');
+        });
+        Schema::table('transactions', function (Blueprint $table) {
+            $table->dropForeign(['trainer_booking_id']);
+            $table->dropColumn('trainer_booking_id');
         });
     }
 };
