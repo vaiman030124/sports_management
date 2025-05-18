@@ -1,15 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\Auth\AdminLoginController;
 
 // Admin Routes
 require __DIR__.'/admin.php';
 
-// Route::prefix('admin')->name('admin.')->group(function () {
-//     Route::resource('admin-users', AdminUserController::class);
-// });
-Route::redirect('/', 'admin/login');
-Route::redirect('/admin', 'admin/login');
-// Other web routes can be added here
+Route::redirect('/', 'admin/');
+Route::get('login', [AdminLoginController::class, 'showLoginForm'])->name('login');
 
 require __DIR__.'/api.php';

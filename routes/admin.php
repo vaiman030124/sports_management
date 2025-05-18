@@ -9,8 +9,15 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\CourtController;
 
 Route::prefix('admin')->group(function() {
+    // Redirect base admin URL to login or dashboard based on auth status
+    Route::get('/', function () {
+        if (auth()->guard('admin')->check()) {
+            return redirect()->route('admin.dashboard');
+        }
+        return redirect()->route('admin.login');
+    })->name('admin.base');
+
     // Authentication Routes
-    Route::get('login', [AdminLoginController::class, 'showLoginForm'])->name('login');
     Route::get('login', [AdminLoginController::class, 'showLoginForm'])->name('admin.login');
     Route::post('login', [AdminLoginController::class, 'login'])->name('admin.login.post');
     Route::post('logout', [AdminLoginController::class, 'logout'])->name('admin.logout');
