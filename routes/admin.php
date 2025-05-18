@@ -15,6 +15,10 @@ Route::prefix('admin')->group(function() {
     Route::post('login', [AdminLoginController::class, 'login'])->name('admin.login.post');
     Route::post('logout', [AdminLoginController::class, 'logout'])->name('admin.logout');
 
+    // Registration Routes
+    Route::get('register', [AdminLoginController::class, 'showRegistrationForm'])->name('admin.register');
+    Route::post('register', [AdminLoginController::class, 'register'])->name('admin.register.post');
+
     // Password Reset Routes
     Route::get('password/reset', [AdminForgotPasswordController::class, 'showLinkRequestForm'])->name('admin.password.request');
     Route::post('password/email', [AdminForgotPasswordController::class, 'sendResetLinkEmail'])->name('admin.password.email');
