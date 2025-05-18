@@ -23,7 +23,6 @@ return new class extends Migration
             $table->time('game_end_time');
             $table->unsignedInteger('max_players')->default(4);
             $table->boolean('is_split_payment')->default(false);
-            $table->foreignId('payment_id')->nullable()->constrained('transactions')->nullOnDelete();
             $table->enum('status', ['pending', 'confirmed', 'canceled', 'completed'])->default('pending');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->nullable();
