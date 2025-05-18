@@ -24,8 +24,6 @@ return new class extends Migration
             $table->date('booking_date');
             $table->unsignedInteger('number_of_players')->default(1);
             $table->enum('status', ['pending', 'confirmed', 'canceled', 'completed'])->default('pending');
-            $table->foreignId('payment_id')->nullable()->constrained('transactions')->nullOnDelete();
-            $table->foreignId('refund_id')->nullable()->constrained('refunds')->nullOnDelete();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->nullable();
         });

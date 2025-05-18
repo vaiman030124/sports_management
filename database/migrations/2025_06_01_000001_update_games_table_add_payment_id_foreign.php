@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::table('games', function (Blueprint $table) {
             $table->foreignId('payment_id')->nullable()->constrained('transactions')->nullOnDelete();
         });
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->foreignId('payment_id')->nullable()->constrained('transactions')->nullOnDelete();
+            $table->foreignId('refund_id')->nullable()->constrained('refunds')->nullOnDelete();
+        });
     }
 
     /**
@@ -24,6 +28,12 @@ return new class extends Migration
         Schema::table('games', function (Blueprint $table) {
             $table->dropForeign(['payment_id']);
             $table->dropColumn('payment_id');
+        });
+        Schema::table('bookings', function (Blueprint $table) {
+            $table->dropForeign(['payment_id']);
+            $table->dropForeign(['refund_id']);
+            $table->dropColumn('payment_id');
+            $table->dropColumn('refund_id');
         });
     }
 };
