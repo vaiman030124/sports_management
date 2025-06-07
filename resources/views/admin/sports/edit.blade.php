@@ -49,7 +49,7 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Sport Details</h3>
+                <h3 class="card-title">Edit Sport Details</h3>
             </div>
             <form action="{{ route('admin.sports.update', $sport->id) }}" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -57,9 +57,9 @@
                 <div class="card-body">
                     <div class="row">
                         {{-- Sport Name --}}
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-sm-6">
                             <label for="sport_name">Sport Name</label>
-                            <input type="text" class="form-control @error('sport_name') is-invalid @enderror" id="sport_name" name="sport_name" value="{{ old('sport_name', $sport->sport_name) }}">
+                            <input type="text" class="form-control @error('sport_name') is-invalid @enderror" id="sport_name" name="sport_name" value="{{ old('sport_name', $sport->sport_name) }}" required>
                             @error('sport_name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -147,30 +147,25 @@
 
                     <div class="row">
                         {{-- Existing Images --}}
-                        <div class="form-group col-md-12">
-                            <label>Existing Images</label>
-                            <div class="d-flex flex-wrap gap-2 mb-3" data-sport-id="{{ $sport->id }}">
-                                @if($sport->images && count($sport->images) > 0)
-                                    @foreach($sport->images as $image)
+                        @if($sport->image)
+                            <div class="form-group col-md-12">
+                                <label>Existing Images</label>
+                                <div class="d-flex flex-wrap gap-2" data-sport-id="{{ $sport->id }}">
                                         <div class="position-relative d-inline-block">
-                                            <img src="{{ asset('storage/' . $image) }}" alt="Sport Image" class="img-thumbnail" style="width: 120px; height: 120px; object-fit: cover;">
-                                            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 remove-image-btn" data-image="{{ $image }}" aria-label="Remove image">
+                                            <img src="{{ asset('storage/' . $sport->image) }}" alt="Sport Image" class="img-thumbnail" style="width: 120px; height: 120px; object-fit: cover;">
+                                            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 remove-image-btn" data-image="{{ $sport->image }}" aria-label="Remove image">
                                                 &times;
                                             </button>
                                         </div>
-                                    @endforeach
-                                @endif
+                                </div>
                             </div>
-                        </div>
+                        @endif
 
                         {{-- Add New Images --}}
                         <div class="form-group col-md-12">
-                            <label for="images">Add New Images</label>
-                            <input type="file" class="form-control-file @error('images') is-invalid @enderror" id="images" name="images[]">
-                            @error('images')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
-                            @error('images.*')
+                            <label for="image">Update Images</label>
+                            <input type="file" class="form-control-file @error('image') is-invalid @enderror" id="image" name="image">
+                            @error('image')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>

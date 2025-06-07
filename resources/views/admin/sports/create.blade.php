@@ -118,14 +118,11 @@
                     </div>
 
                     <div class="row">
-                        {{-- Images --}}
+                        {{-- Image --}}
                         <div class="form-group col-md-6">
-                            <label for="images">Images</label>
-                            <input type="file" class="form-control-file @error('images') is-invalid @enderror" id="images" name="images[]">
-                            @error('images')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
-                            @error('images.*')
+                            <label for="image">Image</label>
+                            <input type="file" class="form-control-file @error('image') is-invalid @enderror" id="image" name="image">
+                            @error('image')
                                 <div class="invalid-feedback d-block">{{ $message }}</div>
                             @enderror
                         </div>

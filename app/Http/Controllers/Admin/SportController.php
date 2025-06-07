@@ -36,23 +36,20 @@ class SportController extends Controller
             'pricing_peak' => 'required|numeric|min:0',
             'pricing_non_peak' => 'required|numeric|min:0',
             'status' => 'required|string|in:active,inactive',
-            'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'descriptions' => 'nullable|string',
             'facilities' => 'nullable|string',
         ]);
 
         $validated['shared_with'] = $validated['shared_with'] ?? [];
 
-        // Handle image uploads
-        $imagePaths = [];
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('sports', 'public');
-                $imagePaths[] = $path;
-            }
+        // Handle single image upload
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('sports', 'public');
+            $validated['image'] = $path;
+        } else {
+            $validated['image'] = null;
         }
-        $validated['images'] = $imagePaths;
 
         Sport::create($validated);
 
@@ -83,23 +80,25 @@ class SportController extends Controller
             'pricing_peak' => 'required|numeric|min:0',
             'pricing_non_peak' => 'required|numeric|min:0',
             'status' => 'required|string|in:active,inactive',
-            'images' => 'nullable|array',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'descriptions' => 'nullable|string',
             'facilities' => 'nullable|string',
         ]);
 
         $validated['shared_with'] = $validated['shared_with'] ?? [];
 
-        // Handle image uploads
-        $imagePaths = $sport->images ?? [];
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('sports', 'public');
-                $imagePaths[] = $path;
+        // Handle single image upload and update
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($sport->image) {
+                \Storage::disk('public')->delete($sport->image);
             }
+            $path = $request->file('image')->store('sports', 'public');
+            $validated['image'] = $path;
+        } else {
+            // Keep existing image if no new image uploaded
+            $validated['image'] = $sport->image;
         }
-        $validated['images'] = $imagePaths;
 
         $sport->update($validated);
 

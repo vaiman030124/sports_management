@@ -11,10 +11,13 @@ class Court extends Model
         'court_name',
         'court_type',
         'status',
+        'images',
+        'description',
     ];
 
     protected $casts = [
         'status' => 'string',
+        'images' => 'array',
     ];
 
     // Relationships

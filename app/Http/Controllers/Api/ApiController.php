@@ -426,6 +426,22 @@ class ApiController extends Controller
         }
 
         $courts = $courts->get();
+
+        // Transform courts to include images and description explicitly
+        $courts = $courts->map(function ($court) {
+            return [
+                'id' => $court->id,
+                'sport_id' => $court->sport_id,
+                'court_name' => $court->court_name,
+                'court_type' => $court->court_type,
+                'status' => $court->status,
+                'images' => $court->images ?? [],
+                'description' => $court->description ?? '',
+                'sport' => $court->sport,
+                'created_at' => $court->created_at,
+                'updated_at' => $court->updated_at,
+            ];
+        });
         
         return response()->json($courts);
     }
@@ -436,8 +452,20 @@ class ApiController extends Controller
             'court_name' => 'required|string|max:255',
             'sport_id' => 'required|exists:sports,id',
             'status' => 'required|in:active,inactive,maintenance',
-            'court_type' => 'required|in:shared,dedicated'
+            'court_type' => 'required|in:shared,dedicated',
+            'description' => 'nullable|string',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('courts', 'public');
+                $imagePaths[] = $path;
+            }
+        }
+        $validated['images'] = $imagePaths;
 
         Court::create($validated);
 
@@ -452,8 +480,24 @@ class ApiController extends Controller
             'sport_id' => 'required|exists:sports,id',
             'status' => 'required|in:active,inactive,maintenance',
             'court_type' => 'required|in:shared,dedicated',
+            'description' => 'nullable|string',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'id' => 'required|exists:courts,id'
         ]);
+
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('courts', 'public');
+                $imagePaths[] = $path;
+            }
+            $validated['images'] = $imagePaths;
+        } else {
+            // If no new images uploaded, keep existing images
+            $court = Court::find($request->id);
+            $validated['images'] = $court ? $court->images : [];
+        }
 
         Court::updateOrCreate(['id' => $request->id], $validated);
 
@@ -492,6 +536,21 @@ class ApiController extends Controller
         $offSet = ($page - 1) * env('API_DATA_LIMIT');
 
         $courts = Court::where('sport_id', $request->id)->limit(env('API_DATA_LIMIT'))->offset($offSet)->get();
+
+        // Transform courts to include images and description explicitly
+        $courts = $courts->map(function ($court) {
+            return [
+                'id' => $court->id,
+                'sport_id' => $court->sport_id,
+                'court_name' => $court->court_name,
+                'court_type' => $court->court_type,
+                'status' => $court->status,
+                'images' => $court->images ?? [],
+                'description' => $court->description ?? '',
+                'created_at' => $court->created_at,
+                'updated_at' => $court->updated_at,
+            ];
+        });
         
         return response()->json($courts);
     }

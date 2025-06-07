@@ -69,6 +69,7 @@ Route::prefix('admin')->group(function() {
 
         // Route to remove sport image
         Route::delete('sports/{sport}/images', [\App\Http\Controllers\Admin\SportController::class, 'removeImage'])->name('admin.sports.removeImage');
+        Route::delete('courts/{court}/images', [\App\Http\Controllers\Admin\CourtController::class, 'removeImage'])->name('admin.courts.removeImage');
         Route::resource('trainers', '\App\Http\Controllers\Admin\TrainerController')->names('admin.trainers');
         Route::resource('transactions', '\App\Http\Controllers\Admin\TransactionController')->names('admin.transactions');
         // Route::resource('reports', '\App\Http\Controllers\Admin\ReportController')->names('admin.reports');

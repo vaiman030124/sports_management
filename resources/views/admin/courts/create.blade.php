@@ -26,7 +26,7 @@
             <div class="card-header">
                 <h3 class="card-title">Court Details</h3>
             </div>
-            <form action="{{ route('admin.courts.store') }}" method="POST">
+            <form action="{{ route('admin.courts.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="card-body">
                     <div class="row">                
@@ -77,6 +77,28 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                        </div>
+                    </div>                                                            
+                    <div class="row">
+                        {{-- Images --}}
+                        <div class="form-group col-md-6">
+                            <label for="images">Images</label>
+                            <input type="file" class="form-control-file @error('images') is-invalid @enderror" id="images" name="images[]" multiple>
+                            @error('images')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                            @error('images.*')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Description --}}
+                        <div class="form-group col-md-6">
+                            <label for="description">Description</label>
+                            <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="3">{{ old('description') }}</textarea>
+                            @error('description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>                                                            
                 </div>

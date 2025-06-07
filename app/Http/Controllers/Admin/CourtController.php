@@ -27,8 +27,20 @@ class CourtController extends Controller
             'court_name' => 'required|string|max:255',
             'sport_id' => 'required|exists:sports,id',
             'status' => 'required|in:active,inactive,maintenance',
-            'court_type' => 'required|in:shared,dedicated'
+            'court_type' => 'required|in:shared,dedicated',
+            'description' => 'nullable|string',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('courts', 'public');
+                $imagePaths[] = $path;
+            }
+        }
+        $validated['images'] = $imagePaths;
 
         Court::create($validated);
 
@@ -52,8 +64,20 @@ class CourtController extends Controller
             'court_name' => 'required|string|max:255',
             'sport_id' => 'required|exists:sports,id',
             'status' => 'required|in:active,inactive,maintenance',
-            'court_type' => 'required|in:shared,dedicated'
+            'court_type' => 'required|in:shared,dedicated',
+            'description' => 'nullable|string',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
+
+        $imagePaths = $court->images ?? [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('courts', 'public');
+                $imagePaths[] = $path;
+            }
+        }
+        $validated['images'] = $imagePaths;
 
         $court->update($validated);
 
@@ -67,7 +91,7 @@ class CourtController extends Controller
             ->with('success', 'Court deleted successfully');
     }
 
-public function getCourtListBySports(Request $request) {
+    public function getCourtListBySports(Request $request) {
         try {
             $arr = ['status' => '0', 'message' => 'Courts not found.'];
 
@@ -82,5 +106,33 @@ public function getCourtListBySports(Request $request) {
         } catch (\Exception $e) {
             return response()->json(['status' => '0', 'message' => $e->getMessage()]);
         }
+    }
+
+    public function removeImage(Request $request, Court $court)
+    {
+        $request->validate([
+            'image' => 'required|string',
+        ]);
+
+        $imageToRemove = $request->input('image');
+        $images = $court->images ?? [];
+
+        if (!in_array($imageToRemove, $images)) {
+            return response()->json(['message' => 'Image not found'], 404);
+        }
+
+        // Remove image from array
+        $images = array_filter($images, function ($img) use ($imageToRemove) {
+            return $img !== $imageToRemove;
+        });
+
+        // Delete image file from storage
+        \Storage::disk('public')->delete($imageToRemove);
+
+        // Update court images
+        $court->images = array_values($images);
+        $court->save();
+
+        return response()->json(['message' => 'Image removed successfully']);
     }
 }
