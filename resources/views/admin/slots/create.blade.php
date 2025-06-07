@@ -172,6 +172,9 @@ $(document).on('change', '#sport_id', function() {
                 }
             }
         });
+    } else {
+        $('#court_id').empty();
+        $('#court_id').append('<option value="">Select Court</option>');
     }
 });
 </script>

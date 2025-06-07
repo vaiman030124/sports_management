@@ -66,6 +66,9 @@ Route::prefix('admin')->group(function() {
         Route::resource('bookings', '\App\Http\Controllers\Admin\BookingController')->names('admin.bookings');
         Route::resource('venues', '\App\Http\Controllers\Admin\VenueController')->names('admin.venues');
         Route::resource('sports', '\App\Http\Controllers\Admin\SportController')->names('admin.sports');
+
+        // Route to remove sport image
+        Route::delete('sports/{sport}/images', [\App\Http\Controllers\Admin\SportController::class, 'removeImage'])->name('admin.sports.removeImage');
         Route::resource('trainers', '\App\Http\Controllers\Admin\TrainerController')->names('admin.trainers');
         Route::resource('transactions', '\App\Http\Controllers\Admin\TransactionController')->names('admin.transactions');
         // Route::resource('reports', '\App\Http\Controllers\Admin\ReportController')->names('admin.reports');
@@ -79,7 +82,14 @@ Route::prefix('admin')->group(function() {
         Route::resource('courts', '\App\Http\Controllers\Admin\CourtController')->names('admin.courts');
         Route::resource('email-templates', '\App\Http\Controllers\Admin\EmailTemplateController')->names('admin.email-templates');
 
-        Route::post('/courtList', [CourtController::class, 'getCourtListBySports'])->name('admin.court.listBySports');
+        Route::resource('razorpay-payments', '\App\Http\Controllers\Admin\RazorpayPaymentController')->only(['index', 'show'])->names('admin.razorpay-payments');
+
+        Route::prefix('razorpay-booking')->group(function () {
+            Route::get('/create', [\App\Http\Controllers\Admin\razorpay_payment\RazorpayBookingController::class, 'create'])->name('admin.razorpay-booking.create');
+            Route::post('/store', [\App\Http\Controllers\Admin\razorpay_payment\RazorpayBookingController::class, 'store'])->name('admin.razorpay-booking.store');
+            Route::post('/verify-payment', [\App\Http\Controllers\Admin\razorpay_payment\RazorpayBookingController::class, 'verifyPayment'])->name('admin.razorpay-booking.verify-payment');
+        });
+
         Route::post('/courtList', [CourtController::class, 'getCourtListBySports'])->name('admin.court.listBySports');
 
         Route::get('/spBook', [AdminController::class, 'sportWiseBooking'])->name('admin.spBook');

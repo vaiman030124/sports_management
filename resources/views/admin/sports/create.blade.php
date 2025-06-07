@@ -24,7 +24,7 @@
             <div class="card-header">
                 <h3 class="card-title">Sport Details</h3>
             </div>
-            <form action="{{ route('admin.sports.store') }}" method="POST">
+<form action="{{ route('admin.sports.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="card-body">
                     <div class="row">
@@ -112,6 +112,40 @@
                                 <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                             </select>
                             @error('status')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        {{-- Images --}}
+                        <div class="form-group col-md-6">
+                            <label for="images">Images</label>
+                            <input type="file" class="form-control-file @error('images') is-invalid @enderror" id="images" name="images[]">
+                            @error('images')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                            @error('images.*')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Descriptions --}}
+                        <div class="form-group col-md-6">
+                            <label for="descriptions">Descriptions</label>
+                            <textarea class="form-control @error('descriptions') is-invalid @enderror" id="descriptions" name="descriptions" rows="3">{{ old('descriptions') }}</textarea>
+                            @error('descriptions')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        {{-- Facilities --}}
+                        <div class="form-group col-md-12">
+                            <label for="facilities">Facilities</label>
+                            <textarea class="form-control @error('facilities') is-invalid @enderror" id="facilities" name="facilities" rows="3">{{ old('facilities') }}</textarea>
+                            @error('facilities')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>

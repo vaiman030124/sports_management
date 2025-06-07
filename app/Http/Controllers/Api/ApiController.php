@@ -34,6 +34,176 @@ class ApiController extends Controller
         return response()->json($venues);
     }
 
+    /**
+     * Trainer Management APIs.
+     */
+    public function getTrainers(Request $request)
+    {
+        $page = $request->page_number ?? 1;
+        $status = $request->status ?? "";
+        $offSet = ($page - 1) * env('API_DATA_LIMIT');
+
+        $trainers = \App\Models\Trainer::limit(env('API_DATA_LIMIT'))->offset($offSet);
+
+        if(!empty($status)) {
+            $trainers = $trainers->where('status', $status);
+        }
+
+        $trainers = $trainers->get();
+
+        return response()->json($trainers);
+    }
+
+    public function createTrainer(Request $request)
+    {
+        $validated = $request->validate([
+            'admin_user_id' => 'required|exists:admin_users,id',
+            'name' => 'required|string|max:255',
+            'photo' => 'nullable|string',
+            'description' => 'nullable|string',
+            'sports' => 'required|integer|exists:sports,id',
+            'is_kid_trainer' => 'required|boolean',
+            'is_adult_trainer' => 'required|boolean',
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        \App\Models\Trainer::create($validated);
+
+        return response()->json(["message" => "Trainer created successfully"]);
+    }
+
+    public function updateTrainer(Request $request)
+    {
+        $request['id'] = $request->id ?? '';
+        $validated = $request->validate([
+            'admin_user_id' => 'required|exists:admin_users,id',
+            'name' => 'required|string|max:255',
+            'photo' => 'nullable|string',
+            'description' => 'nullable|string',
+            'sports' => 'required|integer|exists:sports,id',
+            'is_kid_trainer' => 'required|boolean',
+            'is_adult_trainer' => 'required|boolean',
+            'status' => 'required|in:active,inactive',
+            'id' => 'required|exists:trainers,id',
+        ]);
+
+        \App\Models\Trainer::updateOrCreate(['id' => $request->id], $validated);
+
+        return response()->json(["message" => "Trainer updated successfully"]);
+    }
+
+    public function deleteTrainer(Request $request)
+    {
+        $request['id'] = $request->id ?? '';
+        $validated = $request->validate([
+            'id' => 'required|exists:trainers,id'
+        ]);
+
+        $trainer = \App\Models\Trainer::where('id', $validated['id'])->first();
+        $trainer->delete();
+
+        return response()->json(["message" => "Trainer deleted successfully"]);
+    }
+
+    public function upStatusTrainer(Request $request)
+    {
+        $request['id'] = $request->id ?? '';
+        $validated = $request->validate([
+            'id' => 'required|exists:trainers,id',
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        \App\Models\Trainer::updateOrCreate(['id' => $validated['id']], $validated);
+
+        return response()->json(["message" => "Trainer status updated successfully"]);
+    }
+
+    /**
+     * Trainer Booking Management APIs.
+     */
+    public function bookTrainer(Request $request)
+    {
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'trainer_id' => 'required|exists:trainers,id',
+            'membership_id' => 'nullable|exists:memberships,id',
+            'booking_date' => 'required|date',
+            'booking_time' => 'required|string',
+            'booking_end_time' => 'required|string',
+            'status' => 'required|in:pending,confirmed,cancelled,completed',
+            'payment_id' => 'nullable|exists:transactions,id',
+        ]);
+
+        \App\Models\TrainerBooking::create($validated);
+
+        return response()->json(["message" => "Trainer booked successfully"]);
+    }
+
+    public function myTrainerBookings(Request $request)
+    {
+        $request['user_id'] = $request->user_id ?? '';
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        // Exclude trainer bookings with status 'booked' or 'confirmed' (assuming these mean already booked)
+        $trainerBookings = \App\Models\TrainerBooking::with('trainer', 'user', 'membership', 'payment')
+            ->where('user_id', $validated['user_id'])
+            ->whereNotIn('status', ['booked', 'confirmed'])
+            ->get();
+
+        return response()->json($trainerBookings);
+    }
+
+    public function trainerBookingDetail(Request $request)
+    {
+        $request['id'] = $request->id ?? '';
+        $validated = $request->validate([
+            'id' => 'required|exists:trainer_bookings,id',
+        ]);
+
+        $trainerBooking = \App\Models\TrainerBooking::with('trainer', 'user', 'membership', 'payment')->where('id', $validated['id'])->first();
+
+        return response()->json($trainerBooking);
+    }
+
+    public function cancelTrainerBooking(Request $request)
+    {
+        $request['id'] = $request->id ?? '';
+        $request['status'] = 'canceled';
+        $validated = $request->validate([
+            'id' => 'required|exists:trainer_bookings,id',
+            'status' => 'required|in:canceled',
+        ]);
+
+        \App\Models\TrainerBooking::updateOrCreate(['id' => $validated['id']], $validated);
+
+        return response()->json(["message" => "Trainer booking cancelled successfully"]);
+    }
+
+    public function getTrainerBookings(Request $request)
+    {
+        $page = $request->page_number ?? 1;
+        $offSet = ($page - 1) * env('API_DATA_LIMIT');
+
+        $trainerBookings = \App\Models\TrainerBooking::with('trainer', 'user', 'membership', 'payment')->limit(env('API_DATA_LIMIT'))->offset($offSet)->get();
+
+        return response()->json($trainerBookings);
+    }
+
+    public function upStatusTrainerBooking(Request $request)
+    {
+        $request['id'] = $request->id ?? '';
+        $validated = $request->validate([
+            'id' => 'required|exists:trainer_bookings,id',
+            'status' => 'required|in:pending,confirmed,canceled,completed',
+        ]);
+
+        \App\Models\TrainerBooking::updateOrCreate(['id' => $validated['id']], $validated);
+
+        return response()->json(["message" => "Trainer booking status updated successfully"]);
+    }
+
     public function createVenues(Request $request)
     {
         $validated = $request->validate([
@@ -145,9 +315,22 @@ class ApiController extends Controller
             'pricing_peak' => 'required|numeric|min:0',
             'pricing_non_peak' => 'required|numeric|min:0',
             'status' => 'required|string|in:active,inactive',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'descriptions' => 'nullable|string',
+            'facilities' => 'nullable|string',
         ]);
 
         $validated['shared_with'] = $validated['shared_with'] ?? [];
+
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('sports', 'public');
+                $imagePaths[] = $path;
+            }
+        }
+        $validated['images'] = $imagePaths;
 
         Sport::create($validated);
 
@@ -166,10 +349,23 @@ class ApiController extends Controller
             'pricing_peak' => 'required|numeric|min:0',
             'pricing_non_peak' => 'required|numeric|min:0',
             'status' => 'required|string|in:active,inactive',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'descriptions' => 'nullable|string',
+            'facilities' => 'nullable|string',
             'id' => 'required|exists:sports,id'
         ]);
 
         $validated['shared_with'] = $validated['shared_with'] ?? [];
+
+        $imagePaths = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('sports', 'public');
+                $imagePaths[] = $path;
+            }
+        }
+        $validated['images'] = $imagePaths;
 
         Sport::updateOrCreate(['id' => $request->id], $validated);
 

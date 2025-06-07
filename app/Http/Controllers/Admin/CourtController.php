@@ -67,14 +67,14 @@ class CourtController extends Controller
             ->with('success', 'Court deleted successfully');
     }
 
-    public function getCourtListBySports(Request $request) {
+public function getCourtListBySports(Request $request) {
         try {
             $arr = ['status' => '0', 'message' => 'Courts not found.'];
 
             $sport_id = $request->sport_id ?? 0;
 
             if($sport_id > 0) {
-                $courts = Court::all()->where('status', 'active')->where('sport_id', $sport_id);
+                $courts = Court::where('status', 'active')->where('sport_id', $sport_id)->get(['id', 'court_name']);
                 $arr = ['status' => '1', 'message' => 'Courts found.', 'courts' => $courts];
             }
 

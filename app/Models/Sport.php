@@ -14,10 +14,14 @@ class Sport extends Model
         'pricing_peak',
         'pricing_non_peak',
         'status',
+        'images',
+        'descriptions',
+        'facilities',
     ];
 
     protected $casts = [
         'shared_with' => 'array',
+        'images' => 'array',
         'status' => 'string',
     ];
 
