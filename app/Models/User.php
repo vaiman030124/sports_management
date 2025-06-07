@@ -19,6 +19,9 @@ class User extends Authenticatable
         'profile_image',
         'gender',
         'status',
+        'sport_played',
+        'level',
+        'location',
         'remember_token',
         'email_verified_at',
     ];
@@ -33,6 +36,7 @@ class User extends Authenticatable
         'password' => 'hashed',
         'gender' => 'string',
         'status' => 'string',
+        'sport_played' => 'array',
     ];
 
     // Relationships

@@ -300,6 +300,27 @@ class ApiController extends Controller
         }
 
         $sports = $sports->get();
+
+        // Include image_category in response
+        $sports = $sports->map(function ($sport) {
+            return [
+                'id' => $sport->id,
+                'sport_name' => $sport->sport_name,
+                'venue_id' => $sport->venue_id,
+                'court_count' => $sport->court_count,
+                'shared_with' => $sport->shared_with,
+                'pricing_peak' => $sport->pricing_peak,
+                'pricing_non_peak' => $sport->pricing_non_peak,
+                'status' => $sport->status,
+                'image' => $sport->image,
+                'image_category' => $sport->image_category,
+                'descriptions' => $sport->descriptions,
+                'facilities' => $sport->facilities,
+                'venue' => $sport->venue,
+                'created_at' => $sport->created_at,
+                'updated_at' => $sport->updated_at,
+            ];
+        });
         
         return response()->json($sports);
     }
@@ -406,6 +427,25 @@ class ApiController extends Controller
         ]);
 
         $sport = Sport::where('id', $validated['id'])->first();
+
+        // Include image_category in response
+        $sport = [
+            'id' => $sport->id,
+            'sport_name' => $sport->sport_name,
+            'venue_id' => $sport->venue_id,
+            'court_count' => $sport->court_count,
+            'shared_with' => $sport->shared_with,
+            'pricing_peak' => $sport->pricing_peak,
+            'pricing_non_peak' => $sport->pricing_non_peak,
+            'status' => $sport->status,
+            'image' => $sport->image,
+            'image_category' => $sport->image_category,
+            'descriptions' => $sport->descriptions,
+            'facilities' => $sport->facilities,
+            'venue' => $sport->venue,
+            'created_at' => $sport->created_at,
+            'updated_at' => $sport->updated_at,
+        ];
 
         return response()->json($sport);
     }

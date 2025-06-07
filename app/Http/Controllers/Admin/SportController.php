@@ -37,6 +37,7 @@ class SportController extends Controller
             'pricing_non_peak' => 'required|numeric|min:0',
             'status' => 'required|string|in:active,inactive',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image_category' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'descriptions' => 'nullable|string',
             'facilities' => 'nullable|string',
         ]);
@@ -49,6 +50,14 @@ class SportController extends Controller
             $validated['image'] = $path;
         } else {
             $validated['image'] = null;
+        }
+
+        // Handle image_category upload
+        if ($request->hasFile('image_category')) {
+            $path = $request->file('image_category')->store('sports/category', 'public');
+            $validated['image_category'] = $path;
+        } else {
+            $validated['image_category'] = null;
         }
 
         Sport::create($validated);
@@ -81,6 +90,7 @@ class SportController extends Controller
             'pricing_non_peak' => 'required|numeric|min:0',
             'status' => 'required|string|in:active,inactive',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image_category' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'descriptions' => 'nullable|string',
             'facilities' => 'nullable|string',
         ]);
@@ -98,6 +108,19 @@ class SportController extends Controller
         } else {
             // Keep existing image if no new image uploaded
             $validated['image'] = $sport->image;
+        }
+
+        // Handle image_category upload and update
+        if ($request->hasFile('image_category')) {
+            // Delete old image_category if exists
+            if ($sport->image_category) {
+                \Storage::disk('public')->delete($sport->image_category);
+            }
+            $path = $request->file('image_category')->store('sports/category', 'public');
+            $validated['image_category'] = $path;
+        } else {
+            // Keep existing image_category if no new image uploaded
+            $validated['image_category'] = $sport->image_category;
         }
 
         $sport->update($validated);

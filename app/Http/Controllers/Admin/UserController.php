@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Sport;
 
 class UserController extends Controller
 {
@@ -17,7 +18,8 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('admin.users.create');
+        $sports = Sport::where('status', 'active')->get();
+        return view('admin.users.create', compact('sports'));
     }
 
     public function store(Request $request)
@@ -28,6 +30,10 @@ class UserController extends Controller
             'phone' => 'required|string|max:20',
             'password' => 'required|min:8|confirmed',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'sport_played' => 'nullable|array',
+            'sport_played.*' => 'string',
+            'level' => 'nullable|string|max:255',
+            'location' => 'nullable|string|max:255',
         ]);
 
         // Handle profile image upload
@@ -57,7 +63,10 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        return view('admin.users.edit', compact('user'));
+        $sports = Sport::where('status', 'active')->get();
+        // Remove json_decode because sport_played is already cast as array
+        // $user->sport_played = json_decode($user->sport_played, true);
+        return view('admin.users.edit', compact('user', 'sports'));
     }
 
     public function update(Request $request, User $user)
@@ -68,6 +77,10 @@ class UserController extends Controller
             'password' => 'nullable|string|min:8|confirmed',
             'phone' => 'required|string|max:20',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'sport_played' => 'nullable|array',
+            'sport_played.*' => 'string',
+            'level' => 'nullable|string|max:255',
+            'location' => 'nullable|string|max:255',
         ]);
 
         $user->name = $validated['name'];
@@ -87,6 +100,15 @@ class UserController extends Controller
             $path = $request->file('profile_image')->store('profile_images', 'public');
             $user->profile_image = $path;
         }
+
+        if (isset($validated['sport_played'])) {
+            $user->sport_played = json_encode($validated['sport_played']);
+        } else {
+            $user->sport_played = null;
+        }
+
+        $user->level = $validated['level'];
+        $user->location = $validated['location'];
 
         $user->save();
 

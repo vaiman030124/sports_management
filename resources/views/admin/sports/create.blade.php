@@ -127,6 +127,15 @@
                             @enderror
                         </div>
 
+                        {{-- Category Image --}}
+                        <div class="form-group col-md-6">
+                            <label for="image_category">Category Image</label>
+                            <input type="file" class="form-control-file @error('image_category') is-invalid @enderror" id="image_category" name="image_category">
+                            @error('image_category')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         {{-- Descriptions --}}
                         <div class="form-group col-md-6">
                             <label for="descriptions">Descriptions</label>

@@ -15,6 +15,7 @@ class Sport extends Model
         'pricing_non_peak',
         'status',
         'image',
+        'image_category',
         'descriptions',
         'facilities',
     ];

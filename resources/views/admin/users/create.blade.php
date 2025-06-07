@@ -117,6 +117,63 @@
                         @enderror
                     </div>
 
+                    {{-- Sport Played --}}
+                    <div class="form-group">
+                        <label for="sport_played">What sport do you play?</label>
+                        <select 
+                            name="sport_played[]" 
+                            id="sport_played" 
+                            class="form-control @error('sport_played') is-invalid @enderror"
+                            multiple
+                        >
+                            @foreach($sports as $sport)
+                                <option value="{{ $sport->sport_name }}" {{ (is_array(old('sport_played')) && in_array($sport->sport_name, old('sport_played'))) ? 'selected' : '' }}>
+                                    {{ $sport->sport_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('sport_played')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Level --}}
+                    <div class="form-group">
+                        <label for="level">Level</label>
+                        <select 
+                            name="level" 
+                            id="level" 
+                            class="form-control @error('level') is-invalid @enderror"
+                        >
+                            <option value="">Select level</option>
+                            <option value="Beginner" {{ old('level') == 'Beginner' ? 'selected' : '' }}>Beginner</option>
+                            <option value="Beginner+" {{ old('level') == 'Beginner+' ? 'selected' : '' }}>Beginner+</option>
+                            <option value="Intermediate" {{ old('level') == 'Intermediate' ? 'selected' : '' }}>Intermediate</option>
+                            <option value="Intermediate+" {{ old('level') == 'Intermediate+' ? 'selected' : '' }}>Intermediate+</option>
+                            <option value="Advance" {{ old('level') == 'Advance' ? 'selected' : '' }}>Advance</option>
+                            <option value="Advance+" {{ old('level') == 'Advance+' ? 'selected' : '' }}>Advance+</option>
+                        </select>
+                        @error('level')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    {{-- Location --}}
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input 
+                            type="text" 
+                            name="location" 
+                            id="location" 
+                            class="form-control @error('location') is-invalid @enderror" 
+                            value="{{ old('location') }}"
+                            placeholder="Enter location"
+                        >
+                        @error('location')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <button type="submit" class="btn btn-primary">Create User</button>
 
                     <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">

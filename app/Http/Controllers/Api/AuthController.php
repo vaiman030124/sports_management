@@ -51,6 +51,9 @@ class AuthController extends Controller
             'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
+            'sport_played' => 'nullable|string|max:255',
+            'level' => 'nullable|string|max:255',
+            'location' => 'nullable|string|max:255',
         ]);
 
         $name = $request->first_name . ' ' . $request->last_name;
@@ -59,6 +62,9 @@ class AuthController extends Controller
             'name' => $name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'sport_played' => $request->sport_played,
+            'level' => $request->level,
+            'location' => $request->location,
         ]);
 
         $token = $user->createToken('api-token')->plainTextToken;

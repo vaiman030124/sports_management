@@ -1,33 +1,6 @@
 @extends('admin.layout')
 
 @section('content')
-<style>
-.position-relative.d-inline-block {
-    position: relative;
-    display: inline-block;
-}
-.remove-image-btn {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    display: none;
-    z-index: 10;
-    cursor: pointer;
-    background-color: rgba(255, 0, 0, 0.7);
-    border: none;
-    color: white;
-    font-weight: bold;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    line-height: 20px;
-    text-align: center;
-    padding: 0;
-}
-.position-relative.d-inline-block:hover .remove-image-btn {
-    display: block;
-}
-</style>
 <div class="content-header">
     <div class="container-fluid">
         <div class="row mb-2">
@@ -148,21 +121,28 @@
                     <div class="row">
                         {{-- Existing Images --}}
                         @if($sport->image)
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-md-6">
                                 <label>Existing Images</label>
                                 <div class="d-flex flex-wrap gap-2" data-sport-id="{{ $sport->id }}">
-                                        <div class="position-relative d-inline-block">
-                                            <img src="{{ asset('storage/' . $sport->image) }}" alt="Sport Image" class="img-thumbnail" style="width: 120px; height: 120px; object-fit: cover;">
-                                            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1 remove-image-btn" data-image="{{ $sport->image }}" aria-label="Remove image">
-                                                &times;
-                                            </button>
-                                        </div>
+                                    <img src="{{ asset('storage/' . $sport->image) }}" alt="Sport Image" class="img-thumbnail" style="width: 120px; height: 120px; object-fit: cover;">
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Existing Category Image --}}
+                        @if($sport->image_category)
+                            <div class="form-group col-md-6">
+                                <label>Existing Category Image</label>
+                                <div class="d-flex flex-wrap gap-2" data-sport-id="{{ $sport->id }}">
+                                    <div class="position-relative d-inline-block">
+                                        <img src="{{ asset('storage/' . $sport->image_category) }}" alt="Category Image" class="img-thumbnail" style="width: 120px; height: 120px; object-fit: cover;">
+                                    </div>
                                 </div>
                             </div>
                         @endif
 
                         {{-- Add New Images --}}
-                        <div class="form-group col-md-12">
+                        <div class="form-group col-md-6">
                             <label for="image">Update Images</label>
                             <input type="file" class="form-control-file @error('image') is-invalid @enderror" id="image" name="image">
                             @error('image')
@@ -170,8 +150,17 @@
                             @enderror
                         </div>
 
-                        {{-- Descriptions --}}
+                        {{-- Add New Category Image --}}
                         <div class="form-group col-md-6">
+                            <label for="image_category">Update Category Image</label>
+                            <input type="file" class="form-control-file @error('image_category') is-invalid @enderror" id="image_category" name="image_category">
+                            @error('image_category')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        {{-- Descriptions --}}
+                        <div class="form-group col-md-12">
                             <label for="descriptions">Descriptions</label>
                             <textarea class="form-control @error('descriptions') is-invalid @enderror" id="descriptions" name="descriptions" rows="3">{{ old('descriptions', $sport->descriptions) }}</textarea>
                             @error('descriptions')
@@ -201,51 +190,4 @@
         </div>
     </div>
 </section>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const removeButtons = document.querySelectorAll('.remove-image-btn');
-
-    removeButtons.forEach(button => {
-        button.addEventListener('click', function () {
-            const image = this.getAttribute('data-image');
-            if (!image) return;
-
-            if (confirm('Are you sure you want to delete this image?')) {
-                const container = this.closest('[data-sport-id]');
-                if (!container) {
-                    alert('Sport ID container not found');
-                    return;
-                }
-                const sportId = container.getAttribute('data-sport-id');
-                if (!sportId) {
-                    alert('Sport ID not found');
-                    return;
-                }
-                fetch(`/admin/sports/${sportId}/images`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: JSON.stringify({ image: image })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to delete image');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // Remove image container from DOM
-                    this.parentElement.remove();
-                    alert(data.message);
-                })
-                .catch(error => {
-                    alert(error.message);
-                });
-            }
-        });
-    });
-});
-</script>
 @endsection
