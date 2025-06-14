@@ -10,7 +10,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/forgot-password', [AuthController::class, 'sendOtp']);
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
-
+Route::post('available-slots', [\App\Http\Controllers\Api\ApiController::class, 'getAvailableSlotsBySportCourt']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -72,4 +72,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('trainer-bookings/{id}/cancel', [ApiController::class, 'cancelTrainerBooking']);
     Route::post('trainer-bookings/{id}/status', [ApiController::class, 'upStatusTrainerBooking']);
     // Route::get('trainer-bookings', [ApiController::class, 'getTrainerBookings']);
+
+    // Game APIs
+    Route::post('games', [ApiController::class, 'createGame']);
+    Route::post('games/{gameId}/invite', [ApiController::class, 'inviteUser']);
+    Route::get('my-games', [ApiController::class, 'listUserGames']);
 });

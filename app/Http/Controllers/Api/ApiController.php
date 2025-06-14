@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Venue;
 use App\Models\Sport;
 use App\Models\Court;
 use App\Models\Slot;
 use App\Models\Booking;
 use App\Models\Group;
+use App\Models\Game;
+use App\Models\GameParticipant;
 
 class ApiController extends Controller
 {
@@ -695,6 +698,136 @@ class ApiController extends Controller
         $slots = Slot::with('sport', 'court')->where('sport_id', $validated['sport_id'])->where('slot_date', $validated['slot_date'])->where('status', 'available')->get();
         
         return response()->json($slots);
+    }
+
+    public function getAvailableSlotsBySportCourt(Request $request)
+    {
+        $validated = $request->validate([
+            'sport_id' => 'required|exists:sports,id',
+            'court_id' => 'required|exists:courts,id',
+        ]);
+
+        $today = date('Y-m-d');
+
+        // Get slots for sport and court from today onwards with status 'available'
+        $slots = Slot::where('sport_id', $validated['sport_id'])
+            ->where('court_id', $validated['court_id'])
+            ->where('slot_date', '>=', $today)
+            ->where('status', 'available')
+            ->get();
+
+        // Filter out slots that are fully booked
+        $availableSlots = $slots->filter(function ($slot) {
+            $bookedCount = \App\Models\Booking::where('slot_id', $slot->id)
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->count();
+            return $bookedCount < $slot->available_slots;
+        })->values();
+
+        return response()->json($availableSlots);
+    }
+
+     /**
+     * Create a new game by the authenticated user.
+     */
+    public function createGame(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'sport_id' => 'required|exists:sports,id',
+            'court_id' => 'required|exists:courts,id',
+            'slot_id' => 'required|exists:slots,id',
+            'group_id' => 'nullable|exists:groups,id',
+            'is_split_payment' => 'boolean',
+            'status' => 'required|in:pending,confirmed,canceled,completed',
+            'payment_id' => 'nullable'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $data = $validator->validated();
+
+        // Check if slot is confirmed or booked
+        $slot = \App\Models\Slot::find($data['slot_id']);
+        if (!$slot || in_array($slot->status, ['confirmed', 'booked'])) {
+            return response()->json(['error' => 'Cannot create game for a slot that is already confirmed or booked.'], 422);
+        }
+
+        $data['created_by'] = $request->user()->id;
+
+        $game = Game::create($data);
+
+        // If game status is confirmed, update slot status to booked
+        if ($data['status'] === 'confirmed') {
+            $slot = \App\Models\Slot::find($data['slot_id']);
+            if ($slot) {
+                $slot->status = 'booked';
+                $slot->save();
+            }
+        }
+
+        // Add creator as participant by default
+        // GameParticipant::create([
+        //     'game_id' => $game->id,
+        //     'user_id' => $data['created_by'],
+        //     'is_confirmed' => true,
+        //     'has_paid' => false,
+        //     'amount_paid' => 0,
+        // ]);
+
+        return response()->json(['message' => 'Game created successfully', 'game' => $game], 201);
+    }
+
+    /**
+     * Invite a user to a game.
+     */
+    public function inviteUser(Request $request, $gameId)
+    {
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users,id',
+            'team' => 'nullable|string|max:50',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $game = Game::findOrFail($gameId);
+
+        // Check if user is already a participant
+        $existing = GameParticipant::where('game_id', $gameId)
+            ->where('user_id', $request->user_id)
+            ->first();
+
+        if ($existing) {
+            return response()->json(['message' => 'User already invited or participating'], 400);
+        }
+
+        $participant = GameParticipant::create([
+            'game_id' => $gameId,
+            'user_id' => $request->user_id,
+            'team' => $request->team,
+            'is_confirmed' => false,
+            'has_paid' => false,
+            'amount_paid' => 0,
+        ]);
+
+        return response()->json(['message' => 'User invited successfully', 'participant' => $participant], 201);
+    }
+
+    /**
+     * List games for the authenticated user.
+     */
+    public function listUserGames(Request $request)
+    {
+        $userId = $request->user()->id;
+
+        $games = Game::where('created_by', $userId)
+            ->with('participants')
+            ->paginate(10);
+
+        return response()->json($games);
     }
 
     /**

@@ -93,6 +93,8 @@ Route::prefix('admin')->group(function() {
 
         Route::post('/courtList', [CourtController::class, 'getCourtListBySports'])->name('admin.court.listBySports');
 
+        Route::resource('games', '\App\Http\Controllers\Admin\GameController')->names('admin.games');
+
         Route::get('/spBook', [AdminController::class, 'sportWiseBooking'])->name('admin.spBook');
         Route::get('/calBookings', [AdminController::class, 'bookings'])->name('admin.calBookings');
     });

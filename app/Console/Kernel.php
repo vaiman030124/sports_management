@@ -9,11 +9,12 @@ class Kernel extends ConsoleKernel
 {
     protected $commands = [
         Commands\CreateAdminUser::class,
+        Commands\CheckUserActivity::class,
     ];
 
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('user:check-activity')->dailyAt('00:00');
     }
 
     protected function commands()

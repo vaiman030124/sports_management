@@ -23,6 +23,7 @@ class Slot extends Model
         'is_member_slot' => 'boolean',
         'is_peak_hour' => 'boolean',
         'status' => 'string',
+        'slot_date' => 'date',
     ];
 
     // Relationships

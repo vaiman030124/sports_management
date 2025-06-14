@@ -9,14 +9,11 @@ class Game extends Model
     protected $fillable = [
         'created_by',
         'sport_id',
+        'court_id',
+        'slot_id',
         'group_id',
-        'game_date',
         'payment_id',
         'status',
-    ];
-
-    protected $casts = [
-        'game_date' => 'datetime',
     ];
 
     // Relationships
@@ -38,6 +35,16 @@ class Game extends Model
     public function payment()
     {
         return $this->belongsTo(Transaction::class, 'payment_id');
+    }
+
+    public function court()
+    {
+        return $this->belongsTo(Court::class);
+    }
+
+    public function slot()
+    {
+        return $this->belongsTo(Slot::class);
     }
 
     public function participants()

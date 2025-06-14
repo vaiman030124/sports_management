@@ -10,7 +10,7 @@ class GameController extends Controller
 {
     public function index()
     {
-        $games = Game::with(['sport', 'venue'])->paginate(15);
+        $games = Game::with(['sport'])->paginate(15);
         return view('admin.games.index', compact('games'));
     }
 
@@ -23,11 +23,22 @@ class GameController extends Controller
     {
         $validated = $request->validate([
             'sport_id' => 'required|exists:sports,id',
-            'venue_id' => 'required|exists:venues,id',
-            'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',
-            'status' => 'required|in:scheduled,ongoing,completed,cancelled'
+            'court_id' => 'nullable|exists:courts,id',
+            'slot_id' => 'nullable|exists:slots,id',
+            'group_id' => 'nullable|exists:groups,id',
+            'is_split_payment' => 'boolean',
+            'status' => 'required|in:pending,confirmed,canceled,completed',
         ]);
+
+        // Check if slot is confirmed or booked
+        if (isset($validated['slot_id'])) {
+            $slot = \App\Models\Slot::find($validated['slot_id']);
+            if (!$slot || in_array($slot->status, ['confirmed', 'booked'])) {
+                return redirect()->back()->withInput()->withErrors(['slot_id' => 'Cannot create game for a slot that is already confirmed or booked.']);
+            }
+        }
+
+        $validated['created_by'] = auth()->id();
 
         Game::create($validated);
 
@@ -49,11 +60,20 @@ class GameController extends Controller
     {
         $validated = $request->validate([
             'sport_id' => 'required|exists:sports,id',
-            'venue_id' => 'required|exists:venues,id',
-            'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',
-            'status' => 'required|in:scheduled,ongoing,completed,cancelled'
+            'court_id' => 'nullable|exists:courts,id',
+            'slot_id' => 'nullable|exists:slots,id',
+            'group_id' => 'nullable|exists:groups,id',
+            'is_split_payment' => 'boolean',
+            'status' => 'required|in:pending,confirmed,canceled,completed',
         ]);
+
+        // Check if slot is confirmed or booked
+        if (isset($validated['slot_id'])) {
+            $slot = \App\Models\Slot::find($validated['slot_id']);
+            if (!$slot || in_array($slot->status, ['confirmed', 'booked'])) {
+                return redirect()->back()->withInput()->withErrors(['slot_id' => 'Cannot update game for a slot that is already confirmed or booked.']);
+            }
+        }
 
         $game->update($validated);
 

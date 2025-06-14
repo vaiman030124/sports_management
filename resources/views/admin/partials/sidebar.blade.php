@@ -133,6 +133,12 @@
                         <p>Reviews</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.games.index') }}" class="nav-link">
+                        <i class="nav-icon fas fa-gamepad"></i>
+                        <p>Games</p>
+                    </a>
+                </li>
             </ul>
         </nav>
     </div>
