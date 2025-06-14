@@ -1,76 +1,81 @@
 @extends('admin.layout')
 
 @section('content')
-<div class="container">
-    <h1>Edit Game #{{ $game->id }}</h1>
-
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Edit Game #{{ $game->id }}</h3>
         </div>
-    @endif
+        <div class="card-body">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-    <form action="{{ route('admin.games.update', $game) }}" method="POST">
-        @csrf
-        @method('PUT')
+            <form action="{{ route('admin.games.update', $game) }}" method="POST">
+                @csrf
+                @method('PUT')
 
-        <div class="form-group">
-            <label for="sport_id">Sport</label>
-            <select name="sport_id" id="sport_id" class="form-control" required>
-                <option value="">Select Sport</option>
-                @foreach(App\Models\Sport::all() as $sport)
-                    <option value="{{ $sport->id }}" {{ $game->sport_id == $sport->id ? 'selected' : '' }}>{{ $sport->sport_name }}</option>
-                @endforeach
-            </select>
+                <div class="form-group">
+                    <label for="sport_id">Sport</label>
+                    <select name="sport_id" id="sport_id" class="form-control" required>
+                        <option value="">Select Sport</option>
+                        @foreach(App\Models\Sport::all() as $sport)
+                            <option value="{{ $sport->id }}" {{ $game->sport_id == $sport->id ? 'selected' : '' }}>{{ $sport->sport_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Removed game_date input as per user feedback --}}
+
+                <div class="form-group">
+                    <label for="court_id">Court</label>
+                    <select name="court_id" id="court_id" class="form-control">
+                        <option value="">Select Court (optional)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="slot_id">Slot</label>
+                    <select name="slot_id" id="slot_id" class="form-control">
+                        <option value="">Select Slot (optional)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="group_id">Group</label>
+                    <select name="group_id" id="group_id" class="form-control">
+                        <option value="">Select Group (optional)</option>
+                        @foreach(App\Models\Group::all() as $group)
+                            <option value="{{ $group->id }}" {{ $game->group_id == $group->id ? 'selected' : '' }}>{{ $group->group_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-group form-check">
+                    <input type="checkbox" name="is_split_payment" id="is_split_payment" class="form-check-input" value="1" {{ $game->is_split_payment ? 'checked' : '' }}>
+                    <label for="is_split_payment" class="form-check-label">Split Payment</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select name="status" id="status" class="form-control" required>
+                        <option value="pending" {{ $game->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                        <option value="confirmed" {{ $game->status == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                        <option value="canceled" {{ $game->status == 'canceled' ? 'selected' : '' }}>Canceled</option>
+                        <option value="completed" {{ $game->status == 'completed' ? 'selected' : '' }}>Completed</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Update Game</button>
+            </form>
         </div>
-
-        {{-- Removed game_date input as per user feedback --}}
-
-        <div class="form-group">
-            <label for="court_id">Court</label>
-            <select name="court_id" id="court_id" class="form-control">
-                <option value="">Select Court (optional)</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="slot_id">Slot</label>
-            <select name="slot_id" id="slot_id" class="form-control">
-                <option value="">Select Slot (optional)</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="group_id">Group</label>
-            <select name="group_id" id="group_id" class="form-control">
-                <option value="">Select Group (optional)</option>
-                @foreach(App\Models\Group::all() as $group)
-                    <option value="{{ $group->id }}" {{ $game->group_id == $group->id ? 'selected' : '' }}>{{ $group->group_name }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="form-group form-check">
-            <input type="checkbox" name="is_split_payment" id="is_split_payment" class="form-check-input" value="1" {{ $game->is_split_payment ? 'checked' : '' }}>
-            <label for="is_split_payment" class="form-check-label">Split Payment</label>
-        </div>
-
-        <div class="form-group">
-            <label for="status">Status</label>
-            <select name="status" id="status" class="form-control" required>
-                <option value="pending" {{ $game->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="confirmed" {{ $game->status == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
-                <option value="canceled" {{ $game->status == 'canceled' ? 'selected' : '' }}>Canceled</option>
-                <option value="completed" {{ $game->status == 'completed' ? 'selected' : '' }}>Completed</option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Update Game</button>
-    </form>
+    </div>
 </div>
 
 <script>

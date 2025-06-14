@@ -1,72 +1,77 @@
 @extends('admin.layout')
 
 @section('content')
-<div class="container">
-    <h1>Create New Game</h1>
-
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul>
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
+<div class="container-fluid">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Create New Game</h3>
         </div>
-    @endif
+        <div class="card-body">
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-    <form action="{{ route('admin.games.store') }}" method="POST">
-        @csrf
-        <div class="form-group">
-            <label for="sport_id">Sport</label>
-            <select name="sport_id" id="sport_id" class="form-control" required>
-                <option value="">Select Sport</option>
-                @foreach(App\Models\Sport::all() as $sport)
-                    <option value="{{ $sport->id }}">{{ $sport->sport_name }}</option>
-                @endforeach
-            </select>
+            <form action="{{ route('admin.games.store') }}" method="POST">
+                @csrf
+                <div class="form-group">
+                    <label for="sport_id">Sport</label>
+                    <select name="sport_id" id="sport_id" class="form-control" required>
+                        <option value="">Select Sport</option>
+                        @foreach(App\Models\Sport::all() as $sport)
+                            <option value="{{ $sport->id }}">{{ $sport->sport_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="court_id">Court</label>
+                    <select name="court_id" id="court_id" class="form-control" disabled>
+                        <option value="">Select Court (optional)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="slot_id">Slot</label>
+                    <select name="slot_id" id="slot_id" class="form-control" disabled>
+                        <option value="">Select Slot (optional)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="group_id">Group</label>
+                    <select name="group_id" id="group_id" class="form-control">
+                        <option value="">Select Group (optional)</option>
+                        @foreach(App\Models\Group::all() as $group)
+                            <option value="{{ $group->id }}">{{ $group->group_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-group form-check">
+                    <input type="checkbox" name="is_split_payment" id="is_split_payment" class="form-check-input" value="1">
+                    <label for="is_split_payment" class="form-check-label">Split Payment</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select name="status" id="status" class="form-control" required>
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="canceled">Canceled</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Create Game</button>
+            </form>
         </div>
-
-        <div class="form-group">
-            <label for="court_id">Court</label>
-            <select name="court_id" id="court_id" class="form-control" disabled>
-                <option value="">Select Court (optional)</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="slot_id">Slot</label>
-            <select name="slot_id" id="slot_id" class="form-control" disabled>
-                <option value="">Select Slot (optional)</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="group_id">Group</label>
-            <select name="group_id" id="group_id" class="form-control">
-                <option value="">Select Group (optional)</option>
-                @foreach(App\Models\Group::all() as $group)
-                    <option value="{{ $group->id }}">{{ $group->group_name }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="form-group form-check">
-            <input type="checkbox" name="is_split_payment" id="is_split_payment" class="form-check-input" value="1">
-            <label for="is_split_payment" class="form-check-label">Split Payment</label>
-        </div>
-
-        <div class="form-group">
-            <label for="status">Status</label>
-            <select name="status" id="status" class="form-control" required>
-                <option value="pending">Pending</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="canceled">Canceled</option>
-                <option value="completed">Completed</option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Create Game</button>
-    </form>
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

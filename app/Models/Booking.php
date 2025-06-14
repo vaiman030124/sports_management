@@ -90,4 +90,38 @@ class Booking extends Model
     {
         return $this->belongsTo(Refund::class);
     }
+
+    /**
+     * Check if the court is already booked for the given slot, date, and sport or any sport sharing the court.
+     *
+     * @param int $courtId
+     * @param int $slotId
+     * @param string $bookingDate (Y-m-d)
+     * @param int $sportId
+     * @return bool
+     */
+    public static function isCourtBookedForSlot($courtId, $slotId, $bookingDate, $sportId)
+    {
+        $sport = Sport::find($sportId);
+        if (!$sport) {
+            return false;
+        }
+
+        // Get all sports sharing the court including current sport
+        $sharedSportsNames = $sport->shared_with ?? [];
+        $sharedSportsNames[] = $sport->sport_name;
+
+        // Get sport IDs for all shared sports
+        $sharedSportIds = Sport::whereIn('sport_name', $sharedSportsNames)->pluck('id')->toArray();
+
+        // Check if any booking exists for the court, slot, date, and any of these sports with status pending or confirmed
+        $conflictCount = self::where('court_id', $courtId)
+            ->where('slot_id', $slotId)
+            ->whereDate('booking_date', $bookingDate)
+            ->whereIn('sport_id', $sharedSportIds)
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->count();
+
+        return $conflictCount > 0;
+    }
 }

@@ -716,12 +716,21 @@ class ApiController extends Controller
             ->where('status', 'available')
             ->get();
 
-        // Filter out slots that are fully booked
-        $availableSlots = $slots->filter(function ($slot) {
+        // Filter out slots that are fully booked or booked for any shared sport
+        $availableSlots = $slots->filter(function ($slot) use ($validated) {
             $bookedCount = \App\Models\Booking::where('slot_id', $slot->id)
                 ->whereIn('status', ['pending', 'confirmed'])
                 ->count();
-            return $bookedCount < $slot->available_slots;
+
+            // Check if slot is booked for any sport sharing the court
+            $isBookedForSharedSport = \App\Models\Booking::isCourtBookedForSlot(
+                $validated['court_id'],
+                $slot->id,
+                $slot->slot_date->format('Y-m-d'),
+                $validated['sport_id']
+            );
+
+            return $bookedCount < $slot->available_slots && !$isBookedForSharedSport;
         })->values();
 
         return response()->json($availableSlots);
@@ -854,6 +863,18 @@ class ApiController extends Controller
             // 'payment_status' => 'required|in:pending,paid,failed,refunded',
             // 'refund_id' => 'nullable|exists:refunds,id',
         ]);
+
+        // Check if court is already booked for the slot and date by any sport sharing the court
+        $isBooked = Booking::isCourtBookedForSlot(
+            $validated['court_id'],
+            $validated['slot_id'],
+            $validated['booking_date'],
+            $validated['sport_id']
+        );
+
+        if ($isBooked) {
+            return response()->json(['error' => 'Court is already booked for the selected slot and date.'], 422);
+        }
 
         Booking::create($validated);
 
